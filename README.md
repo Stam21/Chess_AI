@@ -1,2 +1,2 @@
-# Laser_Chess_AI
-A Python version of the board game laser chess that implements basic algorithms in AI
+# Chess_AI
+Chess built with Python pygame and implements basic algorithms in AI
