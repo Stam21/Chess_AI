@@ -15,19 +15,48 @@ class GameState():
             np.array(["--","--","--","--","--","--","--","--"]),
             np.array(["--","--","--","--","--","--","--","--"]),
             np.array(["wp","wp","wp","wp","wp","wp","wp","wp"]),
-            np.array(["wR","wN","wB","wK","wQ","wB","wN","wR"])
+            np.array(["wR","wN","wB","wQ","wK","wB","wN","wR"])
         ]
         self.whiteMove = True
         self.blackKing = (0,4)
-        self.whiteKing = (7,3)
+        self.whiteKing = (7,4)
+        #First value represents queenside castling and second value kingside
+        self.castleWhite = [False,False] 
+        self.castleBlack = [False,False]
     
     def makeMove(self, move):
         self.board[move.startRow][move.startCol]= "--"
         self.board[move.endRow][move.endCol] = move.pieceMoved
         if (move.pieceMoved == "wK"):
+            if (move.endRow == 7 and move.endCol == 2 and not self.castleWhite[0]):
+                self.board[move.startRow][move.endCol+1]= "wR"
+                self.board[7][0] = "--"
+            elif (move.endRow == 7 and move.endCol == 6 and not self.castleWhite[1]):
+                self.board[move.startRow][move.endCol-1]= "wR"
+                self.board[7][7] = "--"
             self.whiteKing  = (move.endRow, move.endCol)
+            self.castleWhite = [True,True]
         elif (move.pieceMoved == "bK"):
+            if (move.endRow == 0 and move.endCol == 2 and not self.castleBlack[0]):
+                self.board[move.startRow][move.endCol+1]= "bR"
+                self.board[0][0] = "--"
+            elif (move.endRow == 0 and move.endCol == 6 and not self.castleBlack[1]):
+                self.board[move.startRow][move.endCol-1]= "bR"
+                self.board[0][7] = "--"
             self.blackKing = (move.endRow, move.endCol)
+            self.blackKing = [True,True]
+        elif (move.pieceMoved == "wR" and (move.startCol == 0 or move.startCol == 7)):
+            if (move.startCol == 0):
+                self.castleWhite[0] = True
+            else: 
+                self.castleWhite[1] = True
+        elif (move.pieceMoved == "bR" and (move.startCol == 0 or move.startCol == 7)):
+            if (move.startCol == 0):
+                self.castleBlack[0] = True
+            else: 
+                self.castleBlack[1] = True
+
+
 
         self.movesHistory = []
         self.whiteMove = not self.whiteMove 
@@ -238,14 +267,26 @@ class GameState():
     def getKingMoves(self,x,y):
         if self.whiteMove:
             player = 'b'
+            if (self.whiteKing == (7,4) and self.board[7][0] == "wR" and self.checkCastling(7,4,0,self.castleWhite)):
+                self.moves.append(Actions.Move((7,4),(7,2),self.board))
+            elif (self.whiteKing == (7,4) and self.board[7][7] == "wR" and self.checkCastling(7,4,7,self.castleWhite)):
+                self.moves.append(Actions.Move((7,4),(7,6),self.board))
         else:
             player = 'w'
+            if (self.blackKing == (0,4) and self.board[0][0] == "bR" and self.checkCastling(0,4,0,self.castleBlack)):
+                self.moves.append(Actions.Move((0,4),(0,2),self.board))
+            elif (self.blackKing == (0,4) and self.board[0][7] == "bR" and self.checkCastling(0,4,7,self.castleBlack)):
+                self.moves.append(Actions.Move((0,4),(0,6),self.board))
+
+         
+
 
         for square_x in range(-1,2):
             for square_y in range(-1,2):
                 if (not (square_x == 0 and square_y == 0) and (y+square_y>=0 and y+square_y<len(self.board) and x+square_x>=0 and x+square_x<len(self.board))):
                     if (self.board[x+square_x][y+square_y] == "--" or self.board[x+square_x][y+square_y][0] == player):
-                        self.moves.append(Actions.Move((x,y),(x+square_x,y+square_y),self.board))   
+                        self.moves.append(Actions.Move((x,y),(x+square_x,y+square_y),self.board)) 
+                      
 
     
     # Check for direct threats to the king or checks and for possible threats or pins
@@ -352,4 +393,18 @@ class GameState():
         
         return True
 
+    def checkCastling(self,king_x,king_y,rook_y, canCastle):
 
+        castling = False
+        if (rook_y < king_y and not canCastle[0]):
+            castling = True
+            for y in range(rook_y+1,king_y):
+                if (self.board[king_x][y] != "--"):
+                    castling = False
+        elif  (rook_y > king_y and not canCastle[1]):
+            castling = True
+            for y in range(king_y+1,rook_y):
+                if (self.board[king_x][y] != "--"):
+                    castling = False
+        
+        return castling
