@@ -68,7 +68,8 @@ def main():
                 if len(piecePositions) == 2:
                     move  = Actions.Move(piecePositions[0],piecePositions[1],game_state.board)
                     for vm in validMoves:
-                        if (str(move.getChessNotation()) == str(vm)):
+                        if (move.startRow == vm.startRow and move.startCol == vm.startCol
+                            and move.endRow == vm.endRow and move.endCol == vm.endCol):
                             game_state.makeMove(move)
                             moved = True
 

@@ -4,7 +4,6 @@ information about the validity of moves.
 """
 import numpy as np
 import Actions
-import chess
 
 class GameState():
     def __init__(self):
@@ -21,8 +20,6 @@ class GameState():
         self.whiteMove = True
         self.blackKing = (0,4)
         self.whiteKing = (7,3)
-        self.boardHelper = chess.Board( 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBKQBNR')
-
     
     def makeMove(self, move):
         self.board[move.startRow][move.startCol]= "--"
@@ -32,14 +29,327 @@ class GameState():
         elif (move.pieceMoved == "bK"):
             self.blackKing = (move.endRow, move.endCol)
 
-        self.boardHelper.push(chess.Move.from_uci(move.getChessNotation()))
+        self.movesHistory = []
         self.whiteMove = not self.whiteMove 
         
 
     def getValidMoves(self):
 
+        threats = self.getChecked()
         self.moves = []
-        for move in self.boardHelper.legal_moves:
-            self.moves.append(move)
-        
+        for x in range(len(self.board)):
+            for y in range(len(self.board[x])):
+                player = self.board[x][y][0]
+                if ((player=='w' and self.whiteMove) or (player=='b' and not self.whiteMove)):
+                    piece  = self.board[x][y][1]
+                
+                    if piece == 'p':
+                        self.getPawnMoves(x,y,threats)
+                    elif piece =='R':
+                        self.getRookMoves(x,y,threats)
+                    elif piece == 'N':
+                        self.getKnightMoves(x,y,threats)
+                    elif piece == 'B':
+                        self.getBishopMoves(x,y,threats)
+                    elif piece == 'K':
+                        self.getKingMoves(x,y)
+                    else:
+                        #Queen remaining and her moves are a combination of Rook and Bishop
+                        self.getRookMoves(x,y,threats)
+                        self.getBishopMoves(x,y,threats)
         return self.moves
+    
+    def getPawnMoves(self,x,y,threats):
+        if self.whiteMove:
+            #move pawn 1 square ahead
+            if ((self.board[x-1][y] == "--") and (self.calculateLine(x-1,y,threats,self.whiteKing) and (self.findPins(x,y,self.pins)))):
+                self.moves.append(Actions.Move((x,y),(x-1,y),self.board))
+                #move pawn 2 squares ahead
+                if ((x==6 and self.board[x-2][y] == "--") and (self.calculateLine(x-2,y,threats,self.whiteKing) and (self.findPins(x,y,self.pins)))):
+                    self.moves.append(Actions.Move((x,y),(x-2,y),self.board))
+            if (y > 0):
+                if (self.board[x-1][y-1][0] == 'b' and (self.calculateLine(x-1,y-1,threats,self.whiteKing) and (self.findPins(x,y,self.pins)))):
+                    self.moves.append(Actions.Move((x,y),(x-1,y-1),self.board))
+            if (y < len(self.board)-1):
+                if (self.board[x-1][y+1][0] == 'b' and (self.calculateLine(x-1,y+1,threats,self.whiteKing) and (self.findPins(x,y,self.pins)))):
+                    self.moves.append(Actions.Move((x,y),(x-1,y+1),self.board))
+            
+
+        else:
+            #move pawn 1 square ahead
+            if ((self.board[x+1][y] == "--") and self.calculateLine(x+1,y,threats,self.blackKing) and (self.findPins(x,y,self.pins) )):
+                self.moves.append(Actions.Move((x,y),(x+1,y),self.board))
+                if ((x==1 and self.board[x+2][y] == "--") and self.calculateLine(x+2,y,threats,self.blackKing) and (self.findPins(x,y,self.pins))):
+                    self.moves.append(Actions.Move((x,y),(x+2,y),self.board))
+            if (y > 0):    
+                if (self.board[x+1][y-1][0] == 'w' and self.calculateLine(x+1,y-1,threats,self.blackKing) and (self.findPins(x,y,self.pins))):
+                    self.moves.append(Actions.Move((x,y),(x+1,y-1),self.board))
+            if (y < len(self.board)-1):    
+                if (self.board[x+1][y+1][0] == 'w' and self.calculateLine(x+1,y+1,threats,self.blackKing) and (self.findPins(x,y,self.pins))):
+                    self.moves.append(Actions.Move((x,y),(x+1,y+1),self.board))
+
+
+    def getRookMoves(self,x,y,threats):
+        if self.whiteMove:
+            player = 'b'
+            pos_King = self.whiteKing
+        else:
+            player = 'w'
+            pos_King = self.blackKing
+
+        #move rook right-left-up-down squares
+        counter = 1
+        flagE = False
+        flagW = False
+        flagN = False
+        flagS = False
+        while (not (flagE and flagW and flagN and flagS)):
+                if (x - counter >= 0 and (not flagW) and self.calculateLine(x-counter,y,threats,pos_King) and (self.findPins(x,y,self.pins))):
+                    if (self.board[x-counter][y] == "--" or self.board[x-counter][y][0] == player):
+                        self.moves.append(Actions.Move((x,y),(x-counter,y),self.board))
+                        if (self.board[x-counter][y][0] == player):
+                            flagW = True
+                    else:
+                        flagW = True
+                else:
+                    flagW = True
+                if (y - counter >= 0 and (not flagN)  and self.calculateLine(x,y-counter,threats,pos_King) and (self.findPins(x,y,self.pins))):
+                    if (self.board[x][y-counter] == "--" or self.board[x][y-counter][0] == player):
+                        self.moves.append(Actions.Move((x,y),(x,y-counter),self.board))
+                        if (self.board[x][y-counter][0] == player):
+                            flagN = True
+                    else:
+                        flagN = True
+                else:
+                    flagN = True
+                if  (y + counter < len(self.board) and (not flagS) and self.calculateLine(x,y+counter,threats,pos_King) and (self.findPins(x,y,self.pins))):
+                    if (self.board[x][y+counter] == "--" or self.board[x][y+counter][0] == player):
+                        self.moves.append(Actions.Move((x,y),(x,y+counter),self.board))
+                        if (self.board[x][y+counter][0] == player):
+                            flagS = True
+                    else:
+                        flagS = True
+                else:
+                    flagS = True             
+                if (x + counter < len(self.board) and (not flagE) and self.calculateLine(x+counter,y,threats,pos_King) and (self.findPins(x,y,self.pins))):
+                    if (self.board[x+counter][y] == "--" or self.board[x+counter][y][0] == player):
+                        self.moves.append(Actions.Move((x,y),(x+counter,y),self.board))
+                        if (self.board[x+counter][y][0] == player):
+                            flagE = True
+                    else:
+                        flagE = True
+                else:
+                    flagE = True            
+                counter +=1 
+
+
+    def getKnightMoves(self,x,y,threats):
+        if self.whiteMove:
+            player = 'b'
+            pos_King = self.whiteKing
+        else:
+            player = 'w'
+            pos_King = self.blackKing
+
+        if (x - 2 >= 0):
+            if (y-1 >=0):     
+                if (self.board[x-2][y-1] == "--" or self.board[x-2][y-1][0] == player) and self.calculateLine(x-2,y-1,threats,pos_King) and (self.findPins(x,y,self.pins)):
+                    self.moves.append(Actions.Move((x,y),(x-2,y-1),self.board))
+            if (y+1 < len(self.board)): 
+                if (self.board[x-2][y+1] == "--" or self.board[x-2][y+1][0] == player) and self.calculateLine(x-2,y+1,threats,pos_King) and (self.findPins(x,y,self.pins)):
+                    self.moves.append(Actions.Move((x,y),(x-2,y+1),self.board))
+        if (y - 2 >= 0):
+            if (x-1 >=0):     
+                if (self.board[x-1][y-2] == "--" or self.board[x-1][y-2][0] == player) and self.calculateLine(x-1,y-2,threats,pos_King) and (self.findPins(x,y,self.pins)):
+                    self.moves.append(Actions.Move((x,y),(x-1,y-2),self.board))
+            if (x+1 < len(self.board)): 
+                if (self.board[x+1][y-2] == "--" or self.board[x+1][y-2][0] == player) and self.calculateLine(x+1,y-2,threats,pos_King) and (self.findPins(x,y,self.pins)):
+                    self.moves.append(Actions.Move((x,y),(x+1,y-2),self.board))
+                
+        if  (y + 2 < len(self.board)):
+            if (x-1 >=0):    
+                if (self.board[x-1][y+2] == "--" or self.board[x-1][y+2][0] == player) and self.calculateLine(x-1,y+2,threats,pos_King) and (self.findPins(x,y,self.pins)):
+                    self.moves.append(Actions.Move((x,y),(x-1,y+2),self.board))
+            if (x+1 < len(self.board)):     
+                if (self.board[x+1][y+2] == "--" or self.board[x+1][y+2][0] == player) and self.calculateLine(x+1,y+2,threats,pos_King) and (self.findPins(x,y,self.pins)):
+                    self.moves.append(Actions.Move((x,y),(x+1,y+2),self.board))
+                             
+        if (x + 2 < len(self.board)):
+            if (y-1 >=0):
+                if (self.board[x+2][y-1] == "--" or self.board[x+2][y-1][0] == player) and self.calculateLine(x+2,y-1,threats,pos_King) and (self.findPins(x,y,self.pins)):
+                    self.moves.append(Actions.Move((x,y),(x+2,y-1),self.board))
+            if (y+1 < len(self.board)):   
+                if (self.board[x+2][y+1] == "--" or self.board[x+2][y+1][0] == player) and self.calculateLine(x+2,y+1,threats,pos_King) and (self.findPins(x,y,self.pins)):
+                    self.moves.append(Actions.Move((x,y),(x+2,y+1),self.board))       
+
+    def getBishopMoves(self,x,y,threats):
+        if self.whiteMove:
+            player = 'b'
+            pos_King = self.whiteKing
+        else:
+            player = 'w'
+            pos_King = self.blackKing
+
+        counter = 1
+        flagNE = False
+        flagNW = False
+        flagSE = False
+        flagSW = False
+        while (not (flagNE and flagSE and flagNW and flagSW)):
+                if (x - counter >= 0 and y-counter >= 0 and (not flagNW)  and self.calculateLine(x-counter,y-counter,threats,pos_King) and (self.findPins(x,y,self.pins))):
+                    if (self.board[x-counter][y-counter] == "--" or self.board[x-counter][y-counter][0] == player):
+                        self.moves.append(Actions.Move((x,y),(x-counter,y-counter),self.board))
+                        if (self.board[x-counter][y-counter][0] == player):
+                            flagNW = True
+                    else:
+                        flagNW = True
+                else:
+                    flagNW = True
+                if (x - counter >= 0 and y + counter < len(self.board) and (not flagSW)  and self.calculateLine(x-counter,y+counter,threats,pos_King) and (self.findPins(x,y,self.pins))):
+                    if (self.board[x-counter][y+counter] == "--" or self.board[x-counter][y+counter][0] == player):
+                        self.moves.append(Actions.Move((x,y),(x-counter,y+counter),self.board))
+                        if (self.board[x-counter][y+counter][0] == player):
+                            flagSW = True
+                    else:
+                        flagSW = True
+                else:
+                    flagSW = True
+                if (x + counter < len(self.board) and y - counter >=0 and (not flagNE)  and self.calculateLine(x+counter,y-counter,threats,pos_King) and (self.findPins(x,y,self.pins))):
+                    if (self.board[x+counter][y-counter] == "--" or self.board[x+counter][y-counter][0] == player):
+                        self.moves.append(Actions.Move((x,y),(x+counter,y-counter),self.board))
+                        if (self.board[x+counter][y-counter][0] == player):
+                            flagNE = True
+                    else:
+                        flagNE = True
+                else:
+                    flagNE = True             
+                if (x + counter < len(self.board) and y + counter < len(self.board) and (not flagSE)  and self.calculateLine(x+counter,y+counter,threats,pos_King) and (self.findPins(x,y,self.pins))):
+                    if (self.board[x+counter][y+counter] == "--" or self.board[x+counter][y+counter][0] == player):
+                        self.moves.append(Actions.Move((x,y),(x+counter,y+counter),self.board))
+                        if (self.board[x+counter][y+counter][0] == player):
+                            flagSE = True
+                    else:
+                        flagSE = True
+                else:
+                    flagSE = True
+
+                counter +=1 
+
+    def getKingMoves(self,x,y):
+        if self.whiteMove:
+            player = 'b'
+        else:
+            player = 'w'
+
+        for square_x in range(-1,2):
+            for square_y in range(-1,2):
+                if (not (square_x == 0 and square_y == 0) and (y+square_y>=0 and y+square_y<len(self.board) and x+square_x>=0 and x+square_x<len(self.board))):
+                    if (self.board[x+square_x][y+square_y] == "--" or self.board[x+square_x][y+square_y][0] == player):
+                        self.moves.append(Actions.Move((x,y),(x+square_x,y+square_y),self.board))   
+
+    
+    # Check for direct threats to the king or checks and for possible threats or pins
+    def getChecked(self):
+        if (self.whiteMove):
+            king_pos = self.whiteKing
+
+        else:
+            king_pos = self.blackKing
+
+        self.moves = []
+        self.pins = []
+        threats = []
+        self.getRookMoves(king_pos[0],king_pos[1],[])
+        self.getBishopMoves(king_pos[0],king_pos[1],[])
+
+        # Store all the points with direct attacks to the king
+        for move in self.moves:
+            if(self.board[move.endRow][move.endCol][1] == 'Q'):
+                threats.append((move.endRow,move.endCol))
+            elif(self.board[move.endRow][move.endCol][1] == 'B' and (king_pos[0]!=move.endRow and king_pos[1]!=move.endCol)):
+                threats.append((move.endRow,move.endCol))
+            elif(self.board[move.endRow][move.endCol][1] == 'R' and (king_pos[0]==move.endRow or king_pos[1]==move.endCol)):
+                threats.append((move.endRow,move.endCol))
+        
+        self.moves = []
+        self.getKnightMoves(king_pos[0],king_pos[1],[])
+        for move in self.moves:
+            if(self.board[move.endRow][move.endCol][1] == 'N'):
+                threats.append((move.endRow,move.endCol))
+        
+        self.moves = []
+        self.getPawnMoves(king_pos[0],king_pos[1],[])
+        for move in self.moves:
+            if(self.board[move.endRow][move.endCol][1] == 'p'):
+                threats.append((move.endRow,move.endCol))     
+
+        # Find all white pieces that are closest to the king
+        if (self.board[king_pos[0]][king_pos[1]] == "wK"):
+            self.board[king_pos[0]][king_pos[1]] = "bK"
+        else:
+            self.board[king_pos[0]][king_pos[1]] = "wK"
+
+        self.whiteMove = not self.whiteMove
+        self.moves = []
+        self.getRookMoves(king_pos[0],king_pos[1],[])
+        self.getBishopMoves(king_pos[0],king_pos[1],[])
+        pinstmp = []
+        for move in self.moves:
+            
+            if(self.board[move.endRow][move.endCol] != "--"):
+                pinstmp.append((move.endRow,move.endCol))
+
+        self.whiteMove = not self.whiteMove
+        if (self.board[king_pos[0]][king_pos[1]] == "bK"):
+            self.board[king_pos[0]][king_pos[1]] = "wK"
+        else:
+            self.board[king_pos[0]][king_pos[1]] = "bK"
+
+        
+        # Check if each of the pieces closest to the king is threatened and if so, check if it is a possible threat for the king
+        # A pin can be created either by Queen Rook or Bishop
+        for pin in pinstmp:
+            self.moves = []
+            self.getRookMoves(pin[0],pin[1],[])
+            self.getBishopMoves(pin[0],pin[1],[])
+            for move in self.moves:
+                    if (move.pieceCaptured[1] == 'Q' and (self.calculateLine(pin[0],pin[1],[(move.endRow,move.endCol)],(king_pos[0],king_pos[1])))):
+                        self.pins.append(pin)
+                    elif (move.pieceCaptured[1] == 'B' and (pin[0]!=move.endRow and pin[1]!=move.endCol) and (self.calculateLine(pin[0],pin[1],[(move.endRow,move.endCol)],(king_pos[0],king_pos[1])))):
+                        self.pins.append(pin)
+                    elif (move.pieceCaptured[1] == 'R' and (pin[0]==move.endRow or pin[1]==move.endCol) and (self.calculateLine(pin[0],pin[1],[(move.endRow,move.endCol)],(king_pos[0],king_pos[1])))):
+                        self.pins.append(pin)
+
+        return threats
+
+    # Find if a piece is between the king and a threat
+    def calculateLine(self,x,y,threats,king):
+        validity = False
+        if (len(threats)==0):
+            validity = True
+        else: 
+            for threat in threats:
+                if (threat[0]-king[0] == 0 ):
+                    slope1 = threat[1] - king[1]
+                else:
+                    slope1 = (threat[1] - king[1]) / (threat[0] - king[0])
+                if (x-king[0]== 0): 
+                    slope2 = y - king[1]
+                else:
+                    slope2 = (y - king[1]) / (x - king[0])
+                if ( slope1 == slope2 ):
+                    validity = True
+        
+        return validity
+
+    # Check if a piece is involved in a pin
+    def findPins(self,x,y,pins):
+
+        for pin in pins:
+            if pin[0] == x and pin[1] == y:
+                print(pin)
+                return False
+        
+        return True
+
+
