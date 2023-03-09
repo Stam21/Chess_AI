@@ -22,6 +22,10 @@ class GameState():
         self.blackKing = (0,4)
         self.whiteKing = (7,4)
         self.threats = []
+
+        #Store state of pawn promotion
+        self.whitePawnsPromo = False
+        self.blackPawnsPromo = False
         #Store state of move for each pawn so en passant can be applied
         self.whitePawns = [False,False,False,False,False,False,False,False]
         self.blackPawns = [False,False,False,False,False,False,False,False]
@@ -64,11 +68,16 @@ class GameState():
                         self.whitePawns[move.startCol] = True
                 if (move.startRow != move.endRow and move.startCol != move.endCol and self.board[move.endRow+1][move.endCol]== "bp"):
                     self.board[move.endRow+1][move.endCol]= "--"
+                if (move.endRow == 0):
+                    self.whitePawnsPromo = True
         elif (move.pieceMoved == "bp"):
                 if (not(move.startRow == 1 and (abs(move.startRow - move.endRow) == 2))):
                         self.blackPawns[move.startCol] = True
                 if (move.startRow != move.endRow and move.startCol != move.endCol and self.board[move.endRow-1][move.endCol]== "wp"):
                     self.board[move.endRow-1][move.endCol]= "--"
+                if (move.endRow == len(self.board)-1):
+                    self.blackPawnsPromo = True
+
         for y in range(8):
             if (self.board[6][y] == "--"):
                 self.whitePawns[y] = True
@@ -83,7 +92,8 @@ class GameState():
         
 
     def getValidMoves(self):
-
+        self.whitePawnsPromo = False
+        self.blackPawnsPromo = False
         threats = self.getChecked()
         self.threats = threats
         self.moves = []
@@ -122,7 +132,7 @@ class GameState():
             if (y < len(self.board)-1):
                 if (self.board[x-1][y+1][0] == 'b' and (self.calculateLine(x-1,y+1,threats,self.whiteKing) and (self.findPins(x,y,self.pins) or self.board[x-1][y+1] == "bQ" or self.board[x-1][y+1] == "bB" ))):
                     self.moves.append(Actions.Move((x,y),(x-1,y+1),self.board))
-            if (x > 1 and y <len(self.board)-1 and y>0):
+            if (x > 0 and y <len(self.board)-1 and y>0):
                 if ((self.board[x][y-1] == "bp") and not self.blackPawns[y-1]):
                     self.moves.append(Actions.Move((x,y),(x-1,y-1),self.board))
                 elif ((self.board[x][y+1] == "bp") and not self.blackPawns[y+1]):
@@ -141,7 +151,7 @@ class GameState():
             if (y < len(self.board)-1):    
                 if (self.board[x+1][y+1][0] == 'w' and self.calculateLine(x+1,y+1,threats,self.blackKing) and (self.findPins(x,y,self.pins) or self.board[x+1][y+1] == "wQ" or self.board[x+1][y+1] == "wB")):
                     self.moves.append(Actions.Move((x,y),(x+1,y+1),self.board))
-            if (x < 6 and y <len(self.board)-1 and y>0):
+            if (x < 7 and y <len(self.board)-1 and y>0):
                 if ((self.board[x][y-1] == "wp") and not self.whitePawns[y-1]):
                     self.moves.append(Actions.Move((x,y),(x+1,y-1),self.board))
                 elif ((self.board[x][y+1] == "wp") and not self.whitePawns[y+1]):
