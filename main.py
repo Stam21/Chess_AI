@@ -70,14 +70,20 @@ def main():
                     for vm in validMoves:
                         if (move.startRow == vm.startRow and move.startCol == vm.startCol
                             and move.endRow == vm.endRow and move.endCol == vm.endCol):
-                            game_state.makeMove(move)
-                            moved = True
+                                game_state.makeMove(move)
+                                moved = True
 
                     square = ()
                     piecePositions =[]
 
         if moved:
             validMoves = game_state.getValidMoves()
+            if (len(validMoves) == 0):
+                print("im here")
+                if (len(game_state.threats) == 0):
+                    print("Stalemate")
+                else:
+                    print("Checkmate")
             moved = False
 
         drawBoard(display)
