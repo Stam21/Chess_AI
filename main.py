@@ -12,13 +12,20 @@ SQUARE_SIZE = WIDTH // DIMENSION
 MAX_FPS = 40
 IMAGES = {} 
 pg.init()
+font = pg.font.SysFont('Arial', 25)
 
+'''
+Load all images for the pieces
+'''
 def loadImages():
     gallery = ['wp','wR','wB','wK','wQ','wN','bp','bR','bB','bK','bQ','bN']
     for pic in gallery:
         IMAGES[pic] = pg.transform.scale(pg.image.load("images/" + pic + ".png"), (SQUARE_SIZE,SQUARE_SIZE))
 
 
+'''
+Draw the grid (8x8) and leave one dimension for the pawn promotion graphics 
+'''
 def drawBoard(display):
     for x in range(DIMENSION-1):
         for y in range(DIMENSION-1):
@@ -27,7 +34,9 @@ def drawBoard(display):
             else:
                 pg.draw.rect(display,pg.Color("gray"),pg.Rect(x*SQUARE_SIZE,y*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
 
-
+'''
+Complete drawing the board by putting each piece on the grid based on the board of ChessGame object
+'''
 def drawPieces(display,board):
      for x in range(DIMENSION-1):
         for y in range(DIMENSION-1):
@@ -35,6 +44,9 @@ def drawPieces(display,board):
             if piece != "--":
                 display.blit(IMAGES[piece],pg.Rect(y*SQUARE_SIZE,x*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
 
+'''
+Draw the pieces that can replace the pawn when it reaches last rank (pawn promotion)
+'''
 def drawPromotionPieces(display,color):
     pg.draw.rect(display,pg.Color("light gray"),pg.Rect(8*SQUARE_SIZE,2*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
     pg.draw.rect(display,pg.Color("light gray"),pg.Rect(8*SQUARE_SIZE,3*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
@@ -45,6 +57,9 @@ def drawPromotionPieces(display,color):
     display.blit(IMAGES[color + "B"],pg.Rect(8*SQUARE_SIZE,4*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
     display.blit(IMAGES[color + "N"],pg.Rect(8*SQUARE_SIZE,5*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
 
+'''
+Function that tracks the selection of the piece that will replace the promotion pawn
+'''
 def selectPiece(display,mouse_x,mouse_y,pawn_pos,color,board):
 
     picked = False
@@ -67,6 +82,28 @@ def selectPiece(display,mouse_x,mouse_y,pawn_pos,color,board):
     
     return picked
 
+'''
+Highlight the valid moves for each piece on the board
+'''
+def highlightMoves(display, validMoves , square_selected , game_state):
+    if square_selected != () :
+        x = square_selected[0]
+        y = square_selected[1]
+        # If is white's turn to move focus on white pieces else on black
+        if game_state.board[x][y][0] == ('w' if game_state.whiteMove else 'b'):
+            # Create the instance that will highlight the squares
+            square_highlighted = pg.Surface((SQUARE_SIZE,SQUARE_SIZE))
+            square_highlighted.set_alpha(30)
+            square_highlighted.fill(pg.Color('green'))
+            display.blit(square_highlighted, (y*SQUARE_SIZE, x*SQUARE_SIZE))
+            square_highlighted.set_alpha(100)
+            square_highlighted.fill(pg.Color('yellow'))
+            for move in validMoves:
+                if (move.startRow == x and move.startCol == y):
+                    display.blit(square_highlighted, (move.endCol*SQUARE_SIZE, move.endRow*SQUARE_SIZE))
+
+
+
 def main():
     playingMode = True
     display = pg.display.set_mode((WIDTH, HEIGHT))
@@ -79,8 +116,11 @@ def main():
     square = () # tuple that stores the current selected square
     piecePositions = [] # starting position and destination
     validMoves = game_state.getValidMoves()
-    moved = False
-    promotion = False
+    moved = False #Track if player has made a move
+    promotion = False #Track if pawn is on last rank and player has to choose a piece
+    checkmate = False #Track checkmate
+    stalemate = False #Track stalemate
+    winner = ""
     while playingMode:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -95,6 +135,7 @@ def main():
                     piecePositions =[]
                 else:
                     square = (mouse_y,mouse_x)
+                    # If player has not yet chose piece on promotion do not continue the game
                     if not promotion:
                         piecePositions.append(square)
                 if len(piecePositions) == 2:
@@ -122,7 +163,21 @@ def main():
                     drawPromotionPieces(display,"w")
                     moved = selectPiece(display,mouse_y,mouse_x, (tmpMovedX,tmpMovedY),"w",game_state.board)
                     promotion = not moved
-            
+            elif event.type == pg.KEYDOWN:
+                #When enter is pressed reset the game state
+                if event.key == pg.K_RETURN:
+                    del game_state
+                    display.fill(pg.Color("white"))
+                    game_state = ChessGame.GameState()
+                    square = () # tuple that stores the current selected square
+                    piecePositions = [] # starting position and destination
+                    validMoves = game_state.getValidMoves()
+                    moved = False
+                    promotion = False
+                    checkmate = False
+                    stalemate = False
+                    winner = ""
+                        
 
         
 
@@ -131,13 +186,32 @@ def main():
             display.fill(pg.Color("white"))
             if (len(validMoves) == 0):
                 if (len(game_state.threats) == 0):
-                    print("Stalemate")
+                    stalemate = True
                 else:
-                    print("Checkmate")
+                    if (game_state.whiteMove):
+                        winner = "White"
+                    else:
+                        winner = "Black"
+                    checkmate = True
             moved = False
-        
+
         drawBoard(display)
+        highlightMoves(display,validMoves,square,game_state)
         drawPieces(display, game_state.board) # piece highlighting or move suggestions can be added later on here
+        if checkmate: 
+            display.fill(pg.Color("white"))
+            pg.draw.rect(display, (210, 210, 210), (302,302, 330,60), 6)
+            display.blit(font.render('Checkmate! ' + winner + " wins the game!", True, (0,0,0)), (310,320))
+            pg.draw.rect(display, (210, 210, 210), (312,402, 310,60), 2)
+            display.blit(font.render("Press ENTER to play again!", True, (0,0,0)), (320,420))
+        elif stalemate:
+            display.fill(pg.Color("white"))
+            pg.draw.rect(display, (210, 210, 210), (396,402, 120,100), 5)
+            display.blit(font.render('Stalemate! It is a Draw!', True, (0,0,0)), (350,420))
+            pg.draw.rect(display, (210, 210, 210), (396,502, 120,100), 5)
+            display.blit(font.render("Press ENTER to play again!", True, (0,0,0)), (350,420))
+
+
         clock.tick(MAX_FPS)
         pg.display.flip()
 
