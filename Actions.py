@@ -3,6 +3,7 @@ This class stores possible moves.
 """
 class Move():
 
+    # Convert the indexes of the board into a real chess enumeration system
     ranksToRows = {"1": 7, "2": 6, "3": 5, "4": 4,
                    "5": 3, "6": 2, "7": 1, "8": 0}
     rowsToRanks = {v: k for k, v in ranksToRows.items()}
@@ -20,8 +21,14 @@ class Move():
         self.pieceCaptured = board[self.endRow][self.endCol] 
      
     
+    '''
+    Get the chess notation of a move, by adding the start position and the end position
+    '''
     def getChessNotation(self):
         return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(self.endRow, self.endCol)
     
+    '''
+    Get the rank in which a piece is placed on the board
+    '''
     def getRankFile(self,x,y):
         return self.colsToFiles[y] + self.rowsToRanks[x]
