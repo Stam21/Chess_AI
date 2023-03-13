@@ -6,65 +6,71 @@ Created on Tue Feb 14 14:59:30 2023
 """ 
 
 """
-example board = [[None, Pawn(), None],
-                 [Knight(), None, None],
-                 [None, King(), Queen()]]
+example board = [[1, 6, 1],
+                 [0, 0, 0],
+                 [7, 12,7]]
 """
+
+import ChessGame
 
 MAX_DEPTH = 3
 
-def getBranchValue(board, color, depth):
-    if(depth == MAX_DEPTH):
-        boardValue = 0
-        for x in range(len(board)):
-            for y in range(len(board[0])):
-                if board[x][y] != None:
-                    if (board[x][y].getColor()):
-                        boardValue =+ board[x][y].getValue()
-                    else:
-                        boardValue =- board[x][y].getValue()
-        
-        return boardValue
-    
-    moves = []
-    for x in range(len(board)):
-        for y in range(len(board[0])):
-            for x1 in range(len(board)):
-                for y1 in range(len(board[0])):
-                    if (elem.getColor() == color and elem.isValid((x,y),(x1,y1))):
-                        tempBoard = board
-                        tempBoard[x1][y1] = board[x][y]
-                        tempBoard[x][y] = None
-                        moves.append(tempBoard)
-    
-    branchValue = 0
-    for elem in moves:
-        branchValue =+ getBranchValue(elem, !color, depth+1)
-    
-    return branchValue
+####################MOCKS#######################
 
-def getMove(board, color):
+def utility_1(board):
+    return 0.7
+
+def utility_2(board):
+    return -0.7
+
+def utility_3(board):
+    return 1
+################################################
+
+def getNodeValue(board, isWhite, depth, next_move):
+    #terminal codition
+    if(depth == MAX_DEPTH):
+        w1, w2, w3 = 0.6, 0.3, 0.1
+        boardValue = w1*utility_1(board) + w2*utility_2(board) + w3*utility_3(board)
+        return boardValue, next_move
     
-    moves = []
-    for x in range(len(board)):
-        for y in range(len(board[0])):
-            for x1 in range(len(board)):
-                for y1 in range(len(board[0])):
-                    if (elem.getColor() == color and elem.isValid((x,y),(x1,y1))):
-                        tempBoard = board
-                        tempBoard[x1][y1] = board[x][y]
-                        tempBoard[x][y] = None
-                        moves.append(tempBoard)
+    #intermediate node
+    game_table = ChessGame.GameState()
+    game_table.board = board
+    if (depth%2 == 0): #turno de max
+        game_table.whiteMove = isWhite
+    else: #turno de min
+        game_table.whiteMove = not isWhite
+    
+    moves = game_table.getValidMoves()
+    childrenNodes = []
+    for move in moves: #transform moves into states
+        newBoard = board
+        newBoard[move.startRow][move.startCol] = 0
+        newBoard[move.endRow][move.endCol] = board[move.startRow][move.startCol]
+        childrenNodes.append(newBoard)
+    
+    childrenValues = []
+    for child in childrenNodes: #goes deeper into the tree to get the values that come to this node
+        value = getNodeValue(child, isWhite, depth)[0]
+        childrenValues.append(value)
+    
+    
+    if (depth%2 == 0): #turno de max
+        nodeValue = max(childrenValues)
+    else:              #turno de min
+        nodeValue = min(childrenValues)
         
-        maxValue = -10000
-        maxIndex = -1
-        for x in range(len(moves)):
-            newValue = getBranchValue(board, color, 0)
-            if (newValue > maxValue):
-                maxValue = newValue
-                maxIndex = x
+    if depth == 0:
+        idx = childrenValues.index(nodeValue)
+        next_move = moves[idx]
     
-    return moves[maxIndex]
+    return nodeValue, next_move
+
             
+def getNextMove(board, isWhite, depth):
+    next_move = "NOT YET CALCULATED"
+    next_move = getNodeValue(board, isWhite, depth, next_move)[1]
+    return next_move
         
     
