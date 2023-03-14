@@ -10,11 +10,11 @@ import math as mt
 tempBoard = [[10,8,9,11,12,9,8,10],
              [7,7,7,7,7,7,7,7],
              [0,0,0,0,0,0,0,0],
-             [1,1,1,1,1,1,1,1],
-             [1,1,1,1,1,1,1,1],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
-             [0,0,0,0,0,0,0,0]]
+             [0,0,0,0,0,0,0,0],
+             [1,1,1,1,1,1,1,1],
+             [4,2,3,5,6,3,2,4]]
 
 def getDistance(pos, center):
     return mt.sqrt(((pos[0] - center[0])**2) + ((pos[1] - center[1])**2))
@@ -34,17 +34,15 @@ def utility_3(board, isWhite):
                 blacks = blacks + getDistance((x,y),((len(board)-1)/2,(len(board[0])-1)/2))
     
     retval = 0
+    whites = 5 - whites/cw
+    blacks = 5 - blacks/cb
     if (isWhite):
         retval = whites - blacks
     else:
         retval = blacks - whites
-    
-    print(cw, cb)
-    print("w", whites/cw)
-    print("b", blacks/cb)
     return retval/5
             
 
 
-utility_3(tempBoard, True)
+#utility_3(tempBoard, True)
     
