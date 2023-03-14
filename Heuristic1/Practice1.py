@@ -1,13 +1,40 @@
 
-board = [["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"],
-         ["bp", "bp", "bp", "bp", "bp", "bp", "bp", "bp"],
-         ["--", "--", "--", "--", "--", "--", "--", "--"],
-         ["--", "--", "--", "--", "--", "--", "--", "--"],
-         ["--", "--", "--", "--", "--", "--", "--", "--"],
-         ["--", "--", "--", "--", "--", "--", "--", "--"],
-         ["wp", "wp", "wp", "wp", "wp", "wp", "wp", "wp"],
-         ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"],
+board = [[10,8,9,11,12,9,8,10],
+         [7,7,7,7,7,7,7,7,],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [0,0,0,0,0,0,0,0],
+         [1,1,1,1,1,1,1,1],
+         [4,2,3,5,6,3,2,4],
          ]
+NUMBERS_TO_STRINGS = {
+    0 : "--",
+    1 : "wp",
+    2 : "wN",
+    3 : "wB",
+    4 : "wR",
+    5 : "wQ",
+    6 : "wK",
+    7 : "bp",
+    8 : "bN",
+    9 : "bB",
+    10 : "bR",
+    11 : "bQ",
+    12 : "bK",
+    
+    }
+
+def convertToStrings(matrix):
+    copy = matrix
+    for x in range(len(matrix)):
+        for y in range(len(matrix[0])):
+            copy[x][y] = NUMBERS_TO_STRINGS[matrix[x][y]]
+        
+        copy[x] = np.asarray(copy[x])
+    
+    return copy
+
 
 # define the point values for each piece type
 piece_values = {
@@ -64,8 +91,8 @@ def count_board_value(board, color):
             print(f"{pos}: :0")    
 
     return value, piece_positions
-#calculate_board_value(board, 'White')
-#calculate_board_value(board, 'Black')
+#count_board_value(board, 'White')
+#count_board_value(board, 'Black')
 
 
 
