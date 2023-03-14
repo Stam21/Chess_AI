@@ -19,10 +19,12 @@ class GameState():
             np.array(["wR","wN","wB","wQ","wK","wB","wN","wR"])
         ]
         self.whiteMove = True
+        #I have changed the code here
         self.blackKing = (0,4)
         self.whiteKing = (7,4)
         self.threats = []
-
+        self.moves=[]
+        self.pins=[]
         #Store state of pawn promotion
         self.whitePawnsPromo = False
         self.blackPawnsPromo = False
@@ -100,6 +102,7 @@ class GameState():
         for x in range(len(self.board)):
             for y in range(len(self.board[x])):
                 player = self.board[x][y][0]
+                #print(str(player)+","+str(self.whiteMove))
                 if ((player=='w' and self.whiteMove) or (player=='b' and not self.whiteMove)):
                     piece  = self.board[x][y][1]
                     if piece == 'p':
@@ -141,6 +144,7 @@ class GameState():
 
         else:
             #move pawn 1 square ahead
+
             if ((self.board[x+1][y] == "--") and self.calculateLine(x+1,y,threats,self.blackKing) and (self.findPins(x,y,self.pins) )):
                 self.moves.append(Actions.Move((x,y),(x+1,y),self.board))
                 if ((x==1 and self.board[x+2][y] == "--") and self.calculateLine(x+2,y,threats,self.blackKing) and (self.findPins(x,y,self.pins))):
@@ -383,6 +387,8 @@ class GameState():
                                     threats.append((move.endRow,move.endCol))
                             
                             self.moves = []
+                            #print(str(square_x)+","+str(square_y))
+                            #print(str(x)+","+str(y))
                             self.getPawnMoves(x+square_x,y+square_y,[])
                             for move in self.moves:
                                 if(self.board[move.endRow][move.endCol][1] == 'p'):
@@ -520,3 +526,4 @@ class GameState():
                     castling = False
         
         return castling
+
