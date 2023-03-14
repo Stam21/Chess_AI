@@ -95,5 +95,3 @@ initialBoard = [[10,8,9,11,12,9,8,10],
                 [0,0,0,0,0,0,0,0],
                 [1,1,1,1,1,1,1,1],
                 [4,2,3,5,6,3,2,4]]
-
-print(getNextMove(initialBoard, True).getChessNotation())

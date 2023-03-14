@@ -31,5 +31,6 @@ def convertToStrings(matrix):
             mycopy[x][y] = NUMBERS_TO_STRINGS[mycopy[x][y]]
         
         mycopy[x] = np.asarray(mycopy[x])
-    return copy
+    print(mycopy)
+    return mycopy
     
