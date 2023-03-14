@@ -5,6 +5,7 @@ Created on Mon Mar 13 11:00:04 2023
 @author: Mario
 """
 import numpy as np
+import copy
 
 NUMBERS_TO_STRINGS = {
     0 : "--",
@@ -24,15 +25,11 @@ NUMBERS_TO_STRINGS = {
     }
 
 def convertToStrings(matrix):
-    copy = matrix
-    for x in range(len(matrix)):
-        for y in range(len(matrix[0])):
-            copy[x][y] = NUMBERS_TO_STRINGS[matrix[x][y]]
+    mycopy = copy.deepcopy(matrix)
+    for x in range(len(mycopy)):
+        for y in range(len(mycopy[0])):
+            mycopy[x][y] = NUMBERS_TO_STRINGS[mycopy[x][y]]
         
-        copy[x] = np.asarray(copy[x])
-    
+        mycopy[x] = np.asarray(mycopy[x])
     return copy
-
-m = [[1,2,3],[4,5,6],[0,7,8]]
-print(convertToStrings(m))
     
