@@ -1,19 +1,20 @@
 import numpy as np
 import ChessGame
 
+#matrix for testing
 
 matrix= [
             np.array(["bR","bN","bB","bQ","bK","bB","bN","bR"]),
-            np.array(["bp","bp","bp","--","bp","bp","bp","bp"]),
+            np.array(["bp","bp","bp","bp","bp","bp","bp","bp"]),
             np.array(["--","--","--","--","--","--","--","--"]),
-            np.array(["--","--","--","bp","--","--","--","--"]),
-            np.array(["--","--","--","--","wp","--","--","--"]),
             np.array(["--","--","--","--","--","--","--","--"]),
-            np.array(["wp","wp","wp","wp","--","wp","wp","wp"]),
-            np.array(["wR","--","wB","wQ","wK","wB","wN","wR"])
+            np.array(["--","--","--","--","--","--","--","--"]),
+            np.array(["--","--","--","--","--","--","--","--"]),
+            np.array(["wp","wp","wp","wp","wp","wp","wp","wp"]),
+            np.array(["wR","wN","wB","wQ","wK","wB","wN","wR"])
         ]
 
-
+#converting each pieces to the values they worth
 VALUE_OF_ELEMENTS = {
     "--": 0,
     "p" : 1,
@@ -25,40 +26,14 @@ VALUE_OF_ELEMENTS = {
 
     }
 
-NUMBERS_TO_STRINGS = {
-    0 : "--",
-    1 : "wp",
-    2 : "wN",
-    3 : "wB",
-    4 : "wR",
-    5 : "wQ",
-    6 : "wK",
-    7 : "bp",
-    8 : "bN",
-    9 : "bB",
-    10 : "bR",
-    11 : "bQ",
-    12 : "bK",
-
-    }
-
-def convertToStrings(matrix):
-    copy = matrix
-    for x in range(len(matrix)):
-        for y in range(len(matrix[0])):
-            copy[x][y] = NUMBERS_TO_STRINGS[matrix[x][y]]
-
-        copy[x] = np.asarray(copy[x])
-
-    return copy
-
+#function regarding converting each pieces to the values they worth
 def convertToNumbers(elem):
 
     value = VALUE_OF_ELEMENTS[elem]
 
     return value
 
-
+#attacking function part of the second utility function
 def utility_2_attacking(matrix, isWhite):
     blacks = 0
     whites = 0
@@ -67,34 +42,32 @@ def utility_2_attacking(matrix, isWhite):
     game_state.blackKing = (0, 4)
     game_state.whiteKing = (7, 4)
 
-    #section for the attacking
-    array=[True, False]
-    for elem in array:
+    #Array regarding changin the current move between the white and black teams
+    Whitemove_array=[True, False]
+
+    #Iterate through the whitemove array and get each time the valid moves
+    for elem in Whitemove_array:
         game_state.whiteMove=elem
         validMoves = game_state.getValidMoves()
 
-        #for vm1 in validMovess:
-         #   print(str(vm1.startRow) + "," + str(vm1.startCol))
-         #   print(str(vm1.endRow) + "," + str(vm1.endCol))
-
+        #Go through each valid moves and append the value of the pieces that can be possible to eat from the opposite team
         for vm in validMoves:
             if(matrix[vm.endRow][vm.endCol]!="--"):
 
                 if(matrix[vm.startRow][vm.startCol][0]=="w" and matrix[vm.endRow][vm.endCol][0]=="b"):
+
                     whites=whites+int(VALUE_OF_ELEMENTS[matrix[vm.endRow][vm.endCol][1]])
 
                 elif(matrix[vm.startRow][vm.startCol][0]=="b" and matrix[vm.endRow][vm.endCol][0]=="w"):
-
-                    #print(str(vm.startRow) + "," + str(vm.startCol))
-                    #print(str(vm.endRow) + "," + str(vm.endCol))
                     blacks=blacks+int(VALUE_OF_ELEMENTS[matrix[vm.endRow][vm.endCol][1]])
+
     #substract the player from machine color
     if(isWhite):
          return whites-blacks
     else:
         return blacks-whites
 
-    #section for the protecting
+#section for the protecting
 def utility_2_protecting(matrix, isWhite):
     blacks = 0
     whites = 0
@@ -103,6 +76,8 @@ def utility_2_protecting(matrix, isWhite):
     game_state.blackKing = (0, 4)
     game_state.whiteKing = (7, 4)
 
+    #Iterate through the whole matrix and change each piece to the opposite colour
+    #Then get the possible moves of the inverted piece
     for x in range(len(matrix)):
         for y in range(len(matrix[0])):
             if matrix[x][y] != "--":
@@ -114,7 +89,6 @@ def utility_2_protecting(matrix, isWhite):
                     opponent = 'b'
                     game_state.whiteMove = False
                 matrix[x][y] = opponent + piece[1]
-                print(matrix[x][y])
                 threats=[]
                 game_state.moves=[]
                 if piece[1] == 'p':
@@ -132,6 +106,8 @@ def utility_2_protecting(matrix, isWhite):
                     # Queen remaining and her moves are a combination of Rook and Bishop
                     game_state.getRookMoves(x, y, threats)
                     game_state.getBishopMoves(x, y, threats)
+
+                #After getting the valid moves for the currently examined piece, the rest of the code sums up the protecting moves for eac colors
                 for vm in game_state.moves:
                     if (matrix[vm.endRow][vm.endCol] != "--"):
 
@@ -150,8 +126,10 @@ def utility_2_protecting(matrix, isWhite):
 
 #isWhite true means the machine is white
 isWhite=True
+
 sum_attacking=utility_2_attacking(matrix, isWhite)
 sum_protecting=utility_2_protecting(matrix, isWhite)
+print(sum_attacking)
 print(sum_protecting)
 #combined_sum=sum_attacking+sum_protecting
 
