@@ -5,7 +5,7 @@ import ChessGame
 
 matrix= [
             np.array(["bR","bN","bB","bQ","bK","bB","bN","bR"]),
-            np.array(["bp","bp","bp","bp","bp","bp","bp","bp"]),
+            np.array(["bp","bp","bp","wp","wp","wp","bp","bp"]),
             np.array(["--","--","--","--","--","--","--","--"]),
             np.array(["--","--","--","--","--","--","--","--"]),
             np.array(["--","--","--","--","--","--","--","--"]),
@@ -63,9 +63,9 @@ def utility_2_attacking(matrix, isWhite):
 
     #substract the player from machine color
     if(isWhite):
-         return whites-blacks
+         return (whites-blacks)/4000
     else:
-        return blacks-whites
+        return (blacks-whites)/4000
 
 #section for the protecting
 def utility_2_protecting(matrix, isWhite):
@@ -119,9 +119,9 @@ def utility_2_protecting(matrix, isWhite):
                 matrix[x][y]=piece
     game_state.whiteMove=isWhite
     if (isWhite):
-        return whites - blacks
+        return (whites - blacks)/4000
     else:
-        return blacks - whites
+        return (blacks - whites)/4000
 
 
 #isWhite true means the machine is white
