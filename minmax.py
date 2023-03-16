@@ -15,7 +15,7 @@ import ChessGame
 import adaptationBackboneToGUI as BtG
 import copy
 
-MAX_DEPTH = 1
+MAX_DEPTH = 3
 W1, W2, W3 = 0.6, 0.3, 0.1
 
 ####################MOCKS#######################
@@ -95,3 +95,5 @@ initialBoard = [[10,8,9,11,12,9,8,10],
                 [0,0,0,0,0,0,0,0],
                 [1,1,1,1,1,1,1,1],
                 [4,2,3,5,6,3,2,4]]
+
+print(getNextMove(initialBoard, True).getChessNotation())
