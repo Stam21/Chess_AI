@@ -13,6 +13,7 @@ example board = [[1, 6, 1],
 
 import ChessGame
 import adaptationBackboneToGUI as BtG
+import copy
 
 MAX_DEPTH = 1
 W1, W2, W3 = 0.6, 0.3, 0.1
@@ -32,7 +33,6 @@ def utility_3(board):
 def getNodeValue(board, isWhite, depth, next_move):
     #terminal codition by depth
     if(depth == MAX_DEPTH):
-        
         boardValue = W1*utility_1(board) + W2*utility_2(board) + W3*utility_3(board)
         return boardValue, next_move
     
@@ -60,14 +60,14 @@ def getNodeValue(board, isWhite, depth, next_move):
     #intermediate node
     childrenNodes = []
     for move in moves: #transform moves into states
-        newBoard = board.copy()
+        newBoard = copy.deepcopy(board)
         newBoard[move.startRow][move.startCol] = 0
         newBoard[move.endRow][move.endCol] = board[move.startRow][move.startCol]
         childrenNodes.append(newBoard)
     
     childrenValues = []
     for child in childrenNodes: #goes deeper into the tree to get the values that come to this node
-        value = getNodeValue(child, isWhite, depth, next_move)[0]
+        value = getNodeValue(child, isWhite, depth+1, next_move)[0]
         childrenValues.append(value)
     
     if (depth%2 == 0): #turn of max
