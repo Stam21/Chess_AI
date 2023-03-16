@@ -4,7 +4,7 @@ import ChessGame
 import adaptationBackboneToGUI as BtG
 import copy
 
-MAX_DEPTH = 991 # if I go any hieger I get the "maximum recursion depth exceeded while calling a Python object" error
+MAX_DEPTH = 3 #991 # if I go any hieger I get the "maximum recursion depth exceeded while calling a Python object" error
 W1, W2, W3 = 0.6, 0.3, 0.1
 
 ####################MOCKS#######################
