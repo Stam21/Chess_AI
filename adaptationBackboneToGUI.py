@@ -21,7 +21,7 @@ NUMBERS_TO_STRINGS = {
     10 : "bR",
     11 : "bQ",
     12 : "bK",
-    
+
     }
 
 def convertToStrings(matrix):
@@ -29,7 +29,6 @@ def convertToStrings(matrix):
     for x in range(len(mycopy)):
         for y in range(len(mycopy[0])):
             mycopy[x][y] = NUMBERS_TO_STRINGS[mycopy[x][y]]
-        
+
         mycopy[x] = np.asarray(mycopy[x])
     return mycopy
-    
