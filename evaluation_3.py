@@ -7,7 +7,7 @@ Created on Tue Mar 14 09:52:05 2023
 import math as mt
 
 
-tempBoard = [[10,8,9,11,12,9,8,10],
+test_board = [[10,8,9,11,12,9,8,10],
              [7,7,7,7,7,7,7,7],
              [0,0,0,0,0,0,0,0],
              [0,0,0,0,0,0,0,0],
@@ -19,7 +19,10 @@ tempBoard = [[10,8,9,11,12,9,8,10],
 def getDistance(pos, center):
     return mt.sqrt(((pos[0] - center[0])**2) + ((pos[1] - center[1])**2))
 
-def utility_3(board, isWhite):
+
+# this evaluation function takes into consideration the average distance of all
+# the pieces of each player to the center of the board.
+def evaluation_3(board, isWhite):
     whites = 0
     blacks = 0
     cw = 0
@@ -32,7 +35,6 @@ def utility_3(board, isWhite):
             elif (board[x][y]!=0):
                 cb = cb+1
                 blacks = blacks + getDistance((x,y),((len(board)-1)/2,(len(board[0])-1)/2))
-    
     retval = 0
     whites = 5 - whites/cw
     blacks = 5 - blacks/cb
@@ -44,5 +46,5 @@ def utility_3(board, isWhite):
             
 
 
-#utility_3(tempBoard, True)
+#evaluation_3(test_board, True)
     

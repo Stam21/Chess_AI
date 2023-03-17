@@ -3,7 +3,7 @@ import ChessGame
 
 #matrix for testing
 
-matrix= [
+test_board = [
             np.array(["bR","bN","bB","bQ","bK","bB","bN","bR"]),
             np.array(["bp","bp","bp","wp","wp","wp","bp","bp"]),
             np.array(["--","--","--","--","--","--","--","--"]),
@@ -34,7 +34,7 @@ def convertToNumbers(elem):
     return value
 
 #attacking function part of the second utility function
-def utility_2_attacking(matrix, isWhite):
+def evaluation_2_attacking(matrix, isWhite):
     blacks = 0
     whites = 0
     game_state = ChessGame.GameState()
@@ -68,7 +68,7 @@ def utility_2_attacking(matrix, isWhite):
         return (blacks-whites)/4000
 
 #section for the protecting
-def utility_2_protecting(matrix, isWhite):
+def evaluation_2_protecting(matrix, isWhite):
     blacks = 0
     whites = 0
     game_state = ChessGame.GameState()
@@ -123,14 +123,12 @@ def utility_2_protecting(matrix, isWhite):
     else:
         return (blacks - whites)/4000
 
-
 #isWhite true means the machine is white
-isWhite=True
-
-sum_attacking=utility_2_attacking(matrix, isWhite)
-sum_protecting=utility_2_protecting(matrix, isWhite)
-print(sum_attacking)
-print(sum_protecting)
+#isWhite=True
+#sum_attacking=evaluation_2_attacking(matrix, isWhite)
+#sum_protecting=evaluation_2_protecting(matrix, isWhite)
+#print(sum_attacking)
+#print(sum_protecting)
 #combined_sum=sum_attacking+sum_protecting
 
 
