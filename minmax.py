@@ -14,9 +14,13 @@ example board = [[1, 6, 1],
 import ChessGame
 import adaptationBackboneToGUI as BtG
 import copy
+from evaluation_1 import evaluation_1
+from evaluation_2 import evaluation_2_attacking, evaluation_2_protecting
+from evaluation_3 import evaluation_3
+
 
 MAX_DEPTH = 3
-W1, W2, W3 = 0.6, 0.3, 0.1
+W1, W2, W3, W4 = 0.4, 0.25, 0.25, 0.1
 
 ####################MOCKS#######################
 
@@ -33,7 +37,11 @@ def utility_3(board):
 def getNodeValue(board, isWhite, depth, next_move):
     #terminal codition by depth
     if(depth == MAX_DEPTH):
-        boardValue = W1*utility_1(board) + W2*utility_2(board) + W3*utility_3(board)
+        boardValue = (W1*evaluation_1(board, isWhite) + 
+                      #W2*evaluation_2_attacking(board, isWhite) + 
+                      #W3*evaluation_2_protecting(board, isWhite) +
+                      W4*evaluation_3(board, isWhite)  
+                      )
         return boardValue, next_move
     
     game_table = ChessGame.GameState()
