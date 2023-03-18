@@ -1,13 +1,13 @@
 
-test_board = [[10,8,9,11,12,9,8,10],
-         [7,7,7,7,7,7,7,7],
-         [0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0],
-         [1,1,1,1,1,1,1,1],
-         [4,2,3,5,6,3,2,4],
-         ]
+test_board = [[0,0,0,0,12,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [0,0,0,0,0,0,0,0],
+             [1,1,1,1,1,1,1,1],
+             [4,2,3,5,6,3,2,4],
+             ]
 
 # Create dictionary 'piece value'create numerical value for each tpye of piece 
 PIECE_VALUES = {
@@ -31,11 +31,18 @@ def evaluation_1(board,color):
             piece = board[row][col] 
             if piece != 0:
                 if (piece/6 <= 1):
-                     value += PIECE_VALUES[piece]
+                    if(color):
+                        value += PIECE_VALUES[piece]
+                    else:
+                        value -= PIECE_VALUES[piece]
                 elif (piece/6 > 1):
-                    value -= PIECE_VALUES[piece-6] 
+                    if(color):
+                        value -= PIECE_VALUES[piece-6]
+                    else:
+                        value += PIECE_VALUES[piece-6]
+                    
                           
-    return value/49
-#evaluation_1(test_board,True) #for White         
+    return value/39
+#print(evaluation_1(test_board,False)) #for White         
 #evaluation_1(test_board,False) for 'Black'
 

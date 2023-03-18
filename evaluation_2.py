@@ -81,8 +81,12 @@ def evaluation_2_attacking(matrix, isWhite):
                             blacks=blacks+int(VALUE_OF_ELEMENTS[matrix[vm.endRow][vm.endCol][1]])
 
     #substract the player from machine color
-    
-    return (whites-blacks)/4000
+    if (isWhite):
+        retval = whites - blacks
+    else:
+        retval = blacks - whites
+        
+    return retval/4000
 
 #section for the protecting
 def evaluation_2_protecting(matrix, isWhite):
@@ -133,8 +137,11 @@ def evaluation_2_protecting(matrix, isWhite):
                             whites = whites + int(VALUE_OF_ELEMENTS[matrix[vm.endRow][vm.endCol][1]])
 
                 matrix[x][y]=piece
-
-    return (whites - blacks)/4000
+    if (isWhite):
+        retval = whites - blacks
+    else:
+        retval = blacks - whites
+    return retval/4000
 
 #isWhite true means the machine is white
 #isWhite=True
