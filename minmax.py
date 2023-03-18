@@ -19,15 +19,15 @@ from evaluation_2 import evaluation_2_attacking, evaluation_2_protecting
 from evaluation_3 import evaluation_3
 
 
-MAX_DEPTH = 3
-W1, W2, W3, W4 = 0.7, 0.125, 0.125, 0.05
+MAX_DEPTH = 2
+W1, W2, W3, W4 = 0.75, 0.1, 0.1, 0.05
 
 def getNodeValue(board, isWhite, depth, next_move):
     str_board = BtG.convertToStrings(board) #convert board
     #terminal codition by depth
     if(depth == MAX_DEPTH):
         boardValue = (W1*evaluation_1(board, isWhite) + 
-                      #W2*evaluation_2_attacking(str_board, isWhite) + 
+                      W2*evaluation_2_attacking(str_board, isWhite) + 
                       W3*evaluation_2_protecting(str_board, isWhite) +
                       W4*evaluation_3(board, isWhite)  
                       )
@@ -67,9 +67,9 @@ def getNodeValue(board, isWhite, depth, next_move):
         childrenValues.append(value)
     
     if (depth%2 == 0): #turn of max
-        nodeValue = max(childrenValues)
-    else:              #turn of min
         nodeValue = min(childrenValues)
+    else:              #turn of min
+        nodeValue = max(childrenValues)
         
     if depth == 0:
         idx = childrenValues.index(nodeValue)

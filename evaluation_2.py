@@ -16,14 +16,12 @@ test_board = [
 
 #converting each pieces to the values they worth
 VALUE_OF_ELEMENTS = {
-    "--": 0,
     "p" : 1,
     "N" : 3,
     "B" : 3,
     "R" : 5,
     "Q" : 9,
-    "K" : 1000,
-
+    "K" : 100,
     }
 
 #function regarding converting each pieces to the values they worth
@@ -46,26 +44,45 @@ def evaluation_2_attacking(matrix, isWhite):
     Whitemove_array=[True, False]
 
     #Iterate through the whitemove array and get each time the valid moves
-    for elem in Whitemove_array:
-        game_state.whiteMove=elem
-        validMoves = game_state.getValidMoves()
+    for x in range(len(matrix)):
+        for y in range(len(matrix[0])):
+            if matrix[x][y] != "--":
+                piece = matrix[x][y]
+                if piece[0] == 'b':
+                    game_state.whiteMove=True
+                else:
+                    game_state.whiteMove = False
+                threats = []
+                game_state.moves=[]
+                if piece[1] == 'p':
+                    game_state.getPawnMoves(x, y, threats)
+                elif piece[1] == 'R':
+                    game_state.getRookMoves(x, y, threats)
+                elif piece[1] == 'N':
+                    game_state.getKnightMoves(x, y, threats)
+                elif piece[1] == 'B':
+                    game_state.getBishopMoves(x, y, threats)
+                elif piece[1] == 'K':                    
+                    game_state.getKingMoves(x, y, threats, True)
+                elif piece[1] == 'Q':
+                    # Queen remaining and her moves are a combination of Rook and Bishop
+                    game_state.getRookMoves(x, y, threats)
+                    game_state.getBishopMoves(x, y, threats)
 
-        #Go through each valid moves and append the value of the pieces that can be possible to eat from the opposite team
-        for vm in validMoves:
-            if(matrix[vm.endRow][vm.endCol]!="--"):
+                #Go through each valid moves and append the value of the pieces that can be possible to eat from the opposite team
+                for vm in game_state.moves:
+                    if(matrix[vm.endRow][vm.endCol]!="--"):
 
-                if(matrix[vm.startRow][vm.startCol][0]=="w" and matrix[vm.endRow][vm.endCol][0]=="b"):
+                        if(matrix[vm.startRow][vm.startCol][0]=="w" and matrix[vm.endRow][vm.endCol][0]=="b"):
 
-                    whites=whites+int(VALUE_OF_ELEMENTS[matrix[vm.endRow][vm.endCol][1]])
+                            whites=whites+int(VALUE_OF_ELEMENTS[matrix[vm.endRow][vm.endCol][1]])
 
-                elif(matrix[vm.startRow][vm.startCol][0]=="b" and matrix[vm.endRow][vm.endCol][0]=="w"):
-                    blacks=blacks+int(VALUE_OF_ELEMENTS[matrix[vm.endRow][vm.endCol][1]])
+                        elif(matrix[vm.startRow][vm.startCol][0]=="b" and matrix[vm.endRow][vm.endCol][0]=="w"):
+                            blacks=blacks+int(VALUE_OF_ELEMENTS[matrix[vm.endRow][vm.endCol][1]])
 
     #substract the player from machine color
-    if(isWhite):
-         return (whites-blacks)/4000
-    else:
-        return (blacks-whites)/4000
+    
+    return (whites-blacks)/4000
 
 #section for the protecting
 def evaluation_2_protecting(matrix, isWhite):
@@ -89,7 +106,7 @@ def evaluation_2_protecting(matrix, isWhite):
                     opponent = 'b'
                     game_state.whiteMove = False
                 matrix[x][y] = opponent + piece[1]
-                threats=[]
+                threats = []
                 game_state.moves=[]
                 if piece[1] == 'p':
                     game_state.getPawnMoves(x, y, threats)
@@ -100,8 +117,7 @@ def evaluation_2_protecting(matrix, isWhite):
                 elif piece[1] == 'B':
                     game_state.getBishopMoves(x, y, threats)
                 elif piece[1] == 'K':
-                    pass
-                    #game_state.getKingMoves(x, y, threats, False)
+                    game_state.getKingMoves(x, y, threats, True)
                 elif piece[1] == 'Q':
                     # Queen remaining and her moves are a combination of Rook and Bishop
                     game_state.getRookMoves(x, y, threats)
@@ -117,11 +133,8 @@ def evaluation_2_protecting(matrix, isWhite):
                             whites = whites + int(VALUE_OF_ELEMENTS[matrix[vm.endRow][vm.endCol][1]])
 
                 matrix[x][y]=piece
-    game_state.whiteMove=isWhite
-    if (isWhite):
-        return (whites - blacks)/4000
-    else:
-        return (blacks - whites)/4000
+
+    return (whites - blacks)/4000
 
 #isWhite true means the machine is white
 #isWhite=True

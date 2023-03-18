@@ -186,14 +186,17 @@ def main():
                     piecePositions.append(square)
             if len(piecePositions) == 2:
                 move = minmax.getNextMove(game_state.board, isMachineWhite)
-                game_state.makeMove(move)
-                if (game_state.blackPawnsPromo or game_state.whitePawnsPromo):
-                    moved = False
-                    promotion = True
+                if (move != "NOT YET CALCULATED"):
+                    game_state.makeMove(move)
+                    if (game_state.blackPawnsPromo or game_state.whitePawnsPromo):
+                        moved = False
+                        promotion = True
+                    else: 
+                        moved = True
+                    tmpMovedX = move.endRow
+                    tmpMovedY = move.endCol
                 else: 
-                    moved = True
-                tmpMovedX = move.endRow
-                tmpMovedY = move.endCol
+                    game_state.whiteMove = not game_state.whiteMove
             
                 square = ()
                 piecePositions =[]
@@ -214,7 +217,7 @@ def main():
                 if (len(game_state.threats) == 0):
                     stalemate = True
                 else:
-                    if (game_state.whiteMove):
+                    if (not game_state.whiteMove):
                         winner = "White"
                     else:
                         winner = "Black"

@@ -16,7 +16,7 @@ PIECE_VALUES = {
     3 : 3,  # bishop
     4 : 5,  # rock
     5 : 9,  # Queen
-    0 : 10  # King()
+    6 : 100  # King()
 }
 
 #define this function which takes 'board' and 'color' arguments, and it's return total
@@ -30,11 +30,12 @@ def evaluation_1(board,color):
         for col in range(len(board[row])):
             piece = board[row][col] 
             if piece != 0:
-                if color and int((piece-1)/6) == 0 or not color and int((piece-1)/6) == 1:
-                     value += PIECE_VALUES[piece%6]
-                else:
-                    value -= PIECE_VALUES[piece%6]                
-    return value / 49
+                if (piece/6 <= 1):
+                     value += PIECE_VALUES[piece]
+                elif (piece/6 > 1):
+                    value -= PIECE_VALUES[piece-6] 
+                          
+    return value/49
 #evaluation_1(test_board,True) #for White         
 #evaluation_1(test_board,False) for 'Black'
 
