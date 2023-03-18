@@ -122,7 +122,7 @@ def main():
     checkmate = False #Track checkmate
     stalemate = False #Track stalemate
     winner = ""
-    isMachineWhite = False #True for blacks
+    isMachineWhite = False #False for blacks
     while playingMode:
         if game_state.whiteMove != isMachineWhite:
             for event in pg.event.get():
