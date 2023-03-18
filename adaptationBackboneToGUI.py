@@ -20,8 +20,24 @@ NUMBERS_TO_STRINGS = {
     9 : "bB",
     10 : "bR",
     11 : "bQ",
-    12 : "bK",
+    12 : "bK"
 
+    }
+
+STRINGS_TO_NUMBERS = {
+    "--" : 0,
+    "wp" : 1,
+    "wN" : 2,
+    "wB" : 3,
+    "wR" : 4,
+    "wQ" : 5,
+    "wK" : 6,
+    "bp" : 7,
+    "bN" : 8,
+    "bB" : 9,
+    "bR" : 10,
+    "bQ" : 11,
+    "bK" : 12
     }
 
 def convertToStrings(matrix):
@@ -31,4 +47,12 @@ def convertToStrings(matrix):
             mycopy[x][y] = NUMBERS_TO_STRINGS[mycopy[x][y]]
 
         mycopy[x] = np.asarray(mycopy[x])
+    return mycopy
+
+def convertToNumbers(matrix):
+    mycopy = copy.deepcopy(matrix)
+    for x in range(len(mycopy)):
+        mycopy[x] = mycopy[x].tolist()
+        for y in range(len(mycopy[0])):
+            mycopy[x][y] = int(STRINGS_TO_NUMBERS[mycopy[x][y]])
     return mycopy

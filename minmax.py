@@ -14,30 +14,26 @@ example board = [[1, 6, 1],
 import ChessGame
 import adaptationBackboneToGUI as BtG
 import copy
+from evaluation_1 import evaluation_1
+from evaluation_2 import evaluation_2_attacking, evaluation_2_protecting
+from evaluation_3 import evaluation_3
 
-MAX_DEPTH = 3
-W1, W2, W3 = 0.6, 0.3, 0.1
 
-####################MOCKS#######################
-
-def utility_1(board):
-    return 0.7
-
-def utility_2(board):
-    return -0.7
-
-def utility_3(board):
-    return 1
-################################################
+MAX_DEPTH = 2
+W1, W2, W3, W4 = 0.75, 0.1, 0.1, 0.05
 
 def getNodeValue(board, isWhite, depth, next_move):
+    str_board = BtG.convertToStrings(board) #convert board
     #terminal codition by depth
     if(depth == MAX_DEPTH):
-        boardValue = W1*utility_1(board) + W2*utility_2(board) + W3*utility_3(board)
+        boardValue = (W1*evaluation_1(board, isWhite) + 
+                      W2*evaluation_2_attacking(str_board, isWhite) + 
+                      W3*evaluation_2_protecting(str_board, isWhite) +
+                      W4*evaluation_3(board, isWhite)  
+                      )
         return boardValue, next_move
     
     game_table = ChessGame.GameState()
-    str_board = BtG.convertToStrings(board) #convert board
     game_table.board = str_board
     if (depth%2 == 0): #turno de max
         game_table.whiteMove = isWhite
@@ -71,9 +67,9 @@ def getNodeValue(board, isWhite, depth, next_move):
         childrenValues.append(value)
     
     if (depth%2 == 0): #turn of max
-        nodeValue = max(childrenValues)
-    else:              #turn of min
         nodeValue = min(childrenValues)
+    else:              #turn of min
+        nodeValue = max(childrenValues)
         
     if depth == 0:
         idx = childrenValues.index(nodeValue)
@@ -83,8 +79,9 @@ def getNodeValue(board, isWhite, depth, next_move):
 
             
 def getNextMove(board, isWhite):
+    numberBoard = BtG.convertToNumbers(board)
     next_move = "NOT YET CALCULATED"
-    next_move = getNodeValue(board, isWhite, 0, next_move)[1]
+    next_move = getNodeValue(numberBoard, isWhite, 0, next_move)[1]
     return next_move
         
 initialBoard = [[10,8,9,11,12,9,8,10],
@@ -96,4 +93,4 @@ initialBoard = [[10,8,9,11,12,9,8,10],
                 [1,1,1,1,1,1,1,1],
                 [4,2,3,5,6,3,2,4]]
 
-print(getNextMove(initialBoard, True).getChessNotation())
+#print(getNextMove(initialBoard, True).getChessNotation())
