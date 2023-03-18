@@ -20,12 +20,12 @@ def utility_3(board):
 ################################################
 # Alpha-beta pruning used to optimize the minimax algorithm by reducenumber of nodes required to be evulated
 #add two argument(alpha= best value by maximizing player, beta= best value for minimizing player)
-def getNodeValue(board, isWhite, depth, alpha, beta, next_move): 
+def getNodeValue(board, isWhite, depth, alpha, beta, next_move, parent= None): 
     #terminal codition by depth
     if(depth == MAX_DEPTH):
         
         boardValue = W1*utility_1(board) + W2*utility_2(board) + W3*utility_3(board)
-        return boardValue, next_move
+        return boardValue, next_move, parent
     
     game_table = ChessGame.GameState()
     str_board = BtG.convertToStrings(board) #convert board
@@ -63,7 +63,7 @@ def getNodeValue(board, isWhite, depth, alpha, beta, next_move):
         for child in childrenNodes:  
             # goes deeper into the tree to get the values that come to this node
             # goes thorugh every child node, compute its value in (recurisvely)call to 'getNodeValue'
-            value = getNodeValue(child, isWhite, depth + 1, alpha, beta, False)[0]
+            value = getNodeValue(child, isWhite, depth + 1, alpha, beta, False, parent=(nodeValue, child_index))[0]
             nodeValue = max(nodeValue, value)
             if nodeValue == value:
                 next_move_idx = child_index
@@ -78,7 +78,7 @@ def getNodeValue(board, isWhite, depth, alpha, beta, next_move):
     else: #min's turn
         nodeValue = inf # turn 'nodeValue' into postive infinity
         for child in childrenNodes:  # goes deeper into the tree to get the values that come to this node
-            value = getNodeValue(child, isWhite, depth + 1, alpha, beta, True)[0] #go through each child node
+            value = getNodeValue(child, isWhite, depth + 1, alpha, beta, True, parent=(nodeValue, child_index))[0] #go through each child node
             nodeValue = min(nodeValue, value) #compute its value using recurisive call to 'getNode' above 
             if nodeValue == value:
                 next_move_idx = child_index
@@ -91,13 +91,15 @@ def getNodeValue(board, isWhite, depth, alpha, beta, next_move):
     if depth == 0:
         next_move = moves[next_move_idx]
 
-    return nodeValue, next_move
+    return nodeValue, next_move, parent
 
 def getNextMove(board, isWhite):
     next_move = "NOT YET CALCULATED"
     next_move = getNodeValue(board, isWhite, 0, inf, -inf, next_move)[1]
     return next_move
+#####propagation##########
 
+##########################
 initialBoard = [[10,8,9,11,12,9,8,10],
                 [7,7,7,7,7,7,7,7],
                 [0,0,0,0,0,0,0,0],
@@ -106,5 +108,6 @@ initialBoard = [[10,8,9,11,12,9,8,10],
                 [0,0,0,0,0,0,0,0],
                 [1,1,1,1,1,1,1,1],
                 [4,2,3,5,6,3,2,4]]
+
 
 print(getNextMove(initialBoard, True).getChessNotation())
