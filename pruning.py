@@ -97,9 +97,7 @@ def getNextMove(board, isWhite):
     next_move = "NOT YET CALCULATED"
     next_move = getNodeValue(board, isWhite, 0, inf, -inf, next_move)[1]
     return next_move
-#####propagation##########
 
-##########################
 initialBoard = [[10,8,9,11,12,9,8,10],
                 [7,7,7,7,7,7,7,7],
                 [0,0,0,0,0,0,0,0],
