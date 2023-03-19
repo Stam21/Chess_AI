@@ -207,7 +207,7 @@ def main():
                 promotion = not moved
 
             elif (game_state.whitePawnsPromo and not moved):
-                display.blit(IMAGES["bçwQ"],pg.Rect(move.endRow*SQUARE_SIZE,move.endCol*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
+                display.blit(IMAGES["wQ"],pg.Rect(move.endRow*SQUARE_SIZE,move.endCol*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
                 game_state.board[move.endRow][move.endCol] = "wQ"
                 moved = True
                 promotion = not moved                   
