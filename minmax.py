@@ -20,18 +20,19 @@ from evaluation_2 import evaluation_2_attacking, evaluation_2_protecting
 from evaluation_3 import evaluation_3
 
 
-MAX_DEPTH = 2
+MAX_DEPTH = [2]
 W1, W2, W3, W4 = 0.75, 0.1, 0.1, 0.05
 
 def getNodeValue(board, isWhite, depth, next_move, alpha, beta):
     str_board = BtG.convertToStrings(board) #convert board
     #terminal codition by depth
-    if(depth == MAX_DEPTH):
+    if(depth == MAX_DEPTH[0]):
         boardValue = (W1*evaluation_1(board, isWhite) + 
                       W2*evaluation_2_attacking(str_board, isWhite) + 
                       W3*evaluation_2_protecting(str_board, isWhite) +
                       W4*evaluation_3(board, isWhite)  
                       )
+        
         return boardValue, next_move, beta, alpha #in end nodes alpha and beta do not propagate up
     
     game_table = ChessGame.GameState()
@@ -45,13 +46,19 @@ def getNodeValue(board, isWhite, depth, next_move, alpha, beta):
     
     #terminal condition by the rules
     if (len(moves) == 0):
+        print("detected end game")
+        for row in board:
+            print(row)
         if (len(game_table.threats) == 0):
+            print("draw")
             return 0, next_move, beta, alpha #in end nodes alpha and beta do not propagate up
         else:
             if (game_table.whiteMove == isWhite):
-                return 10000000000, next_move, beta, alpha #in end nodes alpha and beta do not propagate up 
+                print("MACH loos")
+                return -1000000, next_move, beta, alpha #in end nodes alpha and beta do not propagate up 
             else:
-                return -10000000000, next_move, beta, alpha #in end nodes alpha and beta do not propagate up
+                print("player loos")
+                return 1000000, next_move, beta, alpha #in end nodes alpha and beta do not propagate up
             
         
     #intermediate node
@@ -64,9 +71,9 @@ def getNodeValue(board, isWhite, depth, next_move, alpha, beta):
     
     #prunning
     if (depth%2 == 0): #turn of max
-        nodeValue = -1000000
+        nodeValue = -100000000
     else:              #turn of min
-        nodeValue = 1000000
+        nodeValue = 100000000
         
         
     childrenValues = []
@@ -112,11 +119,10 @@ def getNodeValue(board, isWhite, depth, next_move, alpha, beta):
 
             
 def getNextMove(board, isWhite):
-    #pieces = 64
-    #for row in board:
-    #    pieces = pieces - np.count_nonzero(row == "--")
-    #MAX_DEPTH[0] = MAX_DEPTH[0] + int((32-pieces)/10)
-    #print(pieces)
+    pieces = 64
+    for row in board:
+        pieces = pieces - np.count_nonzero(row == "--")
+    MAX_DEPTH[0] = 2 + int((32-pieces)/15)
     numberBoard = BtG.convertToNumbers(board)
     next_move = "NOT YET CALCULATED"
     next_move = getNodeValue(numberBoard, isWhite, 0, next_move, -1000000, 1000000)[1]
