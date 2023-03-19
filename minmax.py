@@ -46,18 +46,12 @@ def getNodeValue(board, isWhite, depth, next_move, alpha, beta):
     
     #terminal condition by the rules
     if (len(moves) == 0):
-        print("detected end game")
-        for row in board:
-            print(row)
         if (len(game_table.threats) == 0):
-            print("draw")
             return 0, next_move, beta, alpha #in end nodes alpha and beta do not propagate up
         else:
             if (game_table.whiteMove == isWhite):
-                print("MACH loos")
                 return -1000000, next_move, beta, alpha #in end nodes alpha and beta do not propagate up 
             else:
-                print("player loos")
                 return 1000000, next_move, beta, alpha #in end nodes alpha and beta do not propagate up
             
         
@@ -111,8 +105,6 @@ def getNodeValue(board, isWhite, depth, next_move, alpha, beta):
     
     
     if depth == 0:
-        #print(nodeValue)
-        #print(childrenValues)
         next_move = moves[next_move_index]
     
     return nodeValue, next_move, alpha, beta
