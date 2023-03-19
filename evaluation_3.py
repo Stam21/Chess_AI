@@ -85,7 +85,32 @@ test_board = [[10, 8, 9,11,12, 9, 8,10],
 # this function will return 0 if we consider it is the beginning of the game and
 # 1 if we consider to be on the endgame
 def getGameStage(board,isWhite):
-    return 0
+    cnt_w=0
+    cnt_b = 0
+    for x in range(len(board)):
+       for y in range(len(board[x])):
+           if (int((board[x][y] - 1) / 6) == 0):
+               if (board[x][y] == 5):
+                   for x1 in range(len(board)):
+                       for y1 in range(len(board[x1])):
+                           if (x1 != x and y1 != y):
+                               if (board[x][y] == 5 or board[x][y] == 6):
+                                   return 0
+                               elif (board[x][y] == 1 or board[x][y] == 2 or board[x][y] == 3 or board[x][y] == 4):
+                                   cnt_w=cnt_w+1
+           else:
+               if (board[x][y]%6 == 5):
+                   for x1 in range(len(board)):
+                       for y1 in range(len(board[x1])):
+                           if (x1 != x and y1 != y):
+                               if (board[x][y]%6 == 5 or board[x][y]%6 == 6):
+                                   return 0
+                               elif (board[x][y]%6 == 1 or board[x][y]%6 == 2 or board[x][y]%6 == 3 or board[x][y]%6 == 4):
+                                   cnt_b = cnt_b + 1
+    if(cnt_w<=1 or cnt_b<=1):
+        return 1
+    else:
+       return 0
 
 # this function assigns a value to all pieces based on their position on the board
 def evaluation_3(board, isWhite):
@@ -110,7 +135,7 @@ def evaluation_3(board, isWhite):
         retval = blacks - whites
     return retval/500
             
-#print(evaluation_3(test_board, False))
+print(evaluation_3(test_board, False))
 
 
 #evaluation_3(test_board, True)
