@@ -189,6 +189,7 @@ def main():
                 if (move != "NOT YET CALCULATED"):
                     game_state.makeMove(move)
                     if (game_state.blackPawnsPromo or game_state.whitePawnsPromo):
+                        print("promo")
                         moved = False
                         promotion = True
                     else: 
@@ -201,13 +202,16 @@ def main():
                 square = ()
                 piecePositions =[]
             if (game_state.blackPawnsPromo and not moved):
-                mouse_x == 2 and mouse_y == 8
-                moved =selectPiece(display,8,2,(tmpMovedX,tmpMovedY),"b",game_state.board)
+                display.blit(IMAGES["bQ"],pg.Rect(move.endRow*SQUARE_SIZE,move.endCol*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
+                game_state.board[move.endRow][move.endCol] = "bQ"
+                moved = True
                 promotion = not moved
 
             elif (game_state.whitePawnsPromo and not moved):
-                moved = selectPiece(display,8,2, (tmpMovedX,tmpMovedY),"w",game_state.board)
-                promotion = not moved                    
+                display.blit(IMAGES["bçwQ"],pg.Rect(move.endRow*SQUARE_SIZE,move.endCol*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
+                game_state.board[move.endRow][move.endCol] = "wQ"
+                moved = True
+                promotion = not moved                   
         
 
         if moved:
