@@ -110,7 +110,7 @@ def evaluation_3(board, isWhite):
         retval = blacks - whites
     return retval/500
             
-print(evaluation_3(test_board, False))
+#print(evaluation_3(test_board, False))
 
 
 #evaluation_3(test_board, True)
