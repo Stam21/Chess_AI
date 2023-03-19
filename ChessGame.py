@@ -111,7 +111,6 @@ class GameState():
         for x in range(len(self.board)):
             for y in range(len(self.board[x])):
                 player = self.board[x][y][0]
-                #print(str(player)+","+str(self.whiteMove))
                 if ((player=='w' and self.whiteMove) or (player=='b' and not self.whiteMove)):
                     piece  = self.board[x][y][1]
                     if piece == 'p':
@@ -207,8 +206,9 @@ class GameState():
                                 self.moves.append(Actions.Move((x,y),(x-counter,y),self.board))
                             if (self.board[x-counter][y][0] == opponent):
                                 flagW = True
-                    else:
-                        flagW = True
+                    elif not (self.board[x-counter][y] == "--" or self.board[x-counter][y][0] == opponent):
+                            flagW = True
+                        
                 else:
                     flagW = True
                 if  (y - counter >= 0 and (not flagN)):
@@ -221,7 +221,7 @@ class GameState():
                                 self.moves.append(Actions.Move((x,y),(x,y-counter),self.board))
                             if (self.board[x][y-counter][0] == opponent):
                                 flagN = True
-                    else:
+                    elif not (self.board[x][y-counter] == "--" or self.board[x][y-counter][0] == opponent):
                         flagN = True
                 else:
                     flagN = True
@@ -235,7 +235,7 @@ class GameState():
                                 self.moves.append(Actions.Move((x,y),(x,y+counter),self.board))
                             if (self.board[x][y+counter][0] == opponent):
                                 flagS = True
-                    else:
+                    elif not (self.board[x][y+counter] == "--" or self.board[x][y+counter][0] == opponent):
                         flagS = True
                 else:
                     flagS = True
@@ -249,13 +249,12 @@ class GameState():
                                 self.moves.append(Actions.Move((x,y),(x+counter,y),self.board))
                             if (self.board[x+counter][y][0] == opponent):
                                 flagE = True
-                    else:
+                    elif not (self.board[x+counter][y] == "--" or self.board[x+counter][y][0] == opponent):
                         flagE = True
                 else:
                     flagE = True
 
                 counter +=1
-
 
     def getKnightMoves(self,x,y,threats):
         '''
@@ -337,7 +336,7 @@ class GameState():
                                 self.moves.append(Actions.Move((x,y),(x-counter,y-counter),self.board))
                             if (self.board[x-counter][y-counter][0] == opponent):
                                     flagNW = True
-                    else:
+                    elif not(self.board[x-counter][y-counter] == "--" or self.board[x-counter][y-counter][0] == opponent):
                         flagNW = True
                 else:
                     flagNW = True
@@ -351,7 +350,7 @@ class GameState():
                             self.moves.append(Actions.Move((x,y),(x-counter,y+counter),self.board))
                         if (self.board[x-counter][y+counter][0] == opponent):
                             flagSW = True
-                    else:
+                    elif not(self.board[x-counter][y+counter] == "--" or self.board[x-counter][y+counter][0] == opponent):
                         flagSW = True
                 else:
                     flagSW = True
@@ -365,7 +364,7 @@ class GameState():
                             self.moves.append(Actions.Move((x,y),(x+counter,y-counter),self.board))
                         if (self.board[x+counter][y-counter][0] == opponent):
                             flagNE = True
-                    else:
+                    elif not(self.board[x+counter][y-counter] == "--" or self.board[x+counter][y-counter][0] == opponent):
                         flagNE = True
                 else:
                     flagNE = True
@@ -379,7 +378,7 @@ class GameState():
                             self.moves.append(Actions.Move((x,y),(x+counter,y+counter),self.board))
                         if (self.board[x+counter][y+counter][0] == opponent):
                             flagSE = True
-                    else:
+                    elif not(self.board[x+counter][y+counter] == "--" or self.board[x+counter][y+counter][0] == opponent):
                         flagSE = True
                 else:
                     flagSE = True
@@ -470,6 +469,7 @@ class GameState():
         threats = []
         self.getRookMoves(king_pos[0],king_pos[1],[])
         self.getBishopMoves(king_pos[0],king_pos[1],[])
+            
 
         # Store all the points with direct attacks to the king
         # Use all possible moves with the kings' coordinates to get the attacks
@@ -483,6 +483,7 @@ class GameState():
 
         self.moves = []
         self.getKnightMoves(king_pos[0],king_pos[1],[])
+        
         for move in self.moves:
             if(self.board[move.endRow][move.endCol][1] == 'N'):
                 threats.append((move.endRow,move.endCol))
@@ -590,3 +591,4 @@ class GameState():
                     castling = False
 
         return castling
+
