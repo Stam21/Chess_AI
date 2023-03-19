@@ -189,7 +189,6 @@ def main():
                 if (move != "NOT YET CALCULATED"):
                     game_state.makeMove(move)
                     if (game_state.blackPawnsPromo or game_state.whitePawnsPromo):
-                        print("promo")
                         moved = False
                         promotion = True
                     else: 
