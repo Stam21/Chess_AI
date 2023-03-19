@@ -5,7 +5,7 @@ Created on Tue Mar 14 09:52:05 2023
 @author: Mario
 """
 
-""" code based on https://www.chessprogramming.org/Simplified_Evaluation_Function"""
+"""code based on https://www.chessprogramming.org/Simplified_Evaluation_Function"""
 
 
 PIECE_BOARDS = {
@@ -63,14 +63,14 @@ PIECE_BOARDS = {
         [ 20, 20,  0,  0,  0,  0, 20, 20],
         [ 20, 30, 10,  0,  0, 10, 30, 20]],
     
-        [[-30,-40,-40,-50,-50,-40,-40,-30],
-        [-30,-40,-40,-50,-50,-40,-40,-30],
-        [-30,-40,-40,-50,-50,-40,-40,-30],
-        [-30,-40,-40,-50,-50,-40,-40,-30],
-        [-20,-30,-30,-40,-40,-30,-30,-20],
-        [-10,-20,-20,-20,-20,-20,-20,-10],
-        [20, 20,  0,  0,  0,  0, 20, 20],
-        [20, 30, 10,  0,  0, 10, 30, 20]]]
+        [[-50,-40,-30,-20,-20,-30,-40,-50],
+        [-30,-20,-10,  0,  0,-10,-20,-30],
+        [-30,-10, 20, 30, 30, 20,-10,-30],
+        [-30,-10, 30, 40, 40, 30,-10,-30],
+        [-30,-10, 30, 40, 40, 30,-10,-30],
+        [-30,-10, 20, 30, 30, 20,-10,-30],
+        [-30,-30,  0,  0,  0,  0,-30,-30],
+        [-50,-30,-30,-30,-30,-30,-30,-50]]]
     }
 
 test_board = [[10, 8, 9,11,12, 9, 8,10],
@@ -110,7 +110,7 @@ def evaluation_3(board, isWhite):
         retval = blacks - whites
     return retval/500
             
-#print(evaluation_3(test_board, False))
+print(evaluation_3(test_board, False))
 
 
 #evaluation_3(test_board, True)
