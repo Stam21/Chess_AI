@@ -91,19 +91,27 @@ def highlightMoves(display, validMoves , square_selected , game_state):
         x = square_selected[0]
         y = square_selected[1]
         # If is white's turn to move focus on white pieces else on black
-        if game_state.board[x][y][0] == ('w' if game_state.whiteMove else 'b'):
-            # Create the instance that will highlight the squares
-            square_highlighted = pg.Surface((SQUARE_SIZE,SQUARE_SIZE))
-            square_highlighted.set_alpha(30)
-            square_highlighted.fill(pg.Color('green'))
-            display.blit(square_highlighted, (y*SQUARE_SIZE, x*SQUARE_SIZE))
-            square_highlighted.set_alpha(100)
-            square_highlighted.fill(pg.Color('yellow'))
-            for move in validMoves:
-                if (move.startRow == x and move.startCol == y):
-                    display.blit(square_highlighted, (move.endCol*SQUARE_SIZE, move.endRow*SQUARE_SIZE))
+        try:
+            if game_state.board[x][y][0] == ('w' if game_state.whiteMove else 'b'):
+                if(x==8):
+                    print(x)
+                    print(y)
+                    print(game_state.board[x][y][0])
+                # Create the instance that will highlight the squares
+                square_highlighted = pg.Surface((SQUARE_SIZE,SQUARE_SIZE))
+                square_highlighted.set_alpha(30)
+                square_highlighted.fill(pg.Color('green'))
+                display.blit(square_highlighted, (y*SQUARE_SIZE, x*SQUARE_SIZE))
+                square_highlighted.set_alpha(100)
+                square_highlighted.fill(pg.Color('yellow'))
+                for move in validMoves:
+                    if (move.startRow == x and move.startCol == y):
+                        display.blit(square_highlighted, (move.endCol*SQUARE_SIZE, move.endRow*SQUARE_SIZE))
+        
 
-
+        except:
+            print("INDEX ERROR")
+            print(square_selected)
 
 def main():
     playingMode = True
