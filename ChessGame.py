@@ -415,7 +415,7 @@ class GameState():
                         if self.calculateLine(x+counter,y+counter,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                 self.moves.append(Actions.Move((x,y),(x+counter,y+counter),self.board))
                         if (self.board[x+counter][y+counter][0] == opponent):
-                            flagSE = True
+                            flagSE = True      
                     elif (self.board[x+counter][y+counter][0] == player):
                         flagSE = True
                 else:
