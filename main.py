@@ -150,7 +150,10 @@ def main():
                         if not promotion:
                             piecePositions.append(square)
                     if len(piecePositions) == 2:
-                        move  = Actions.Move(piecePositions[0],piecePositions[1],game_state.board)
+                        try:
+                            move  = Actions.Move(piecePositions[0],piecePositions[1],game_state.board)
+                        except:
+                            print("CLICKED OUT OF THE BOARD EXCEPTION")
                         for vm in validMoves:
                             if (move.startRow == vm.startRow and move.startCol == vm.startCol
                                 and move.endRow == vm.endRow and move.endCol == vm.endCol):
