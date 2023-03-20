@@ -12,11 +12,11 @@ class GameState():
             np.array(["bR","bN","bB","bQ","bK","bB","bN","bR"]),
             np.array(["bp","bp","bp","bp","bp","bp","bp","bp"]),
             np.array(["--","--","--","--","--","--","--","--"]),
-            np.array(["--","--","--","--","bQ","--","--","--"]),
             np.array(["--","--","--","--","--","--","--","--"]),
-            np.array(["--","--","--","--","wQ","--","--","--"]),
-            np.array(["wp","wp","wp","wp","--","wp","wp","wp"]),
-            np.array(["wR","wN","wB","--","wK","wB","wN","wR"])
+            np.array(["--","--","--","--","--","--","--","--"]),
+            np.array(["--","--","--","--","--","--","--","--"]),
+            np.array(["wp","wp","wp","wp","wp","wp","wp","wp"]),
+            np.array(["wR","wN","wB","wQ","wK","wB","wN","wR"])
         ]
         self.whiteMove = True
         # Initial position of kings.
@@ -438,11 +438,6 @@ class GameState():
                          self.board[x-counter][y-counter] = self.board[x][y]
                          self.board[x][y] = "--"
                          self.threats = self.getChecked()
-                         if (x==6 and y==4 and x-counter == 5 and y-counter == 3):
-                             print("entra")
-                             print(self.board[x][y])
-                             print(self.board[x-counter][y-counter])
-                             print(self.threats)
                          if (len(self.threats) == 0):
                              
                              prevMoves.append(Actions.Move((x,y),(x-counter,y-counter),self.board))
