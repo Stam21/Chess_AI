@@ -5,6 +5,7 @@ Main will be responsible of displaying the graphics and current chessengine obje
 import pygame as pg
 import ChessGame
 import Actions
+import minmax
 
 WIDTH = HEIGHT = 864
 DIMENSION = 9
@@ -90,19 +91,27 @@ def highlightMoves(display, validMoves , square_selected , game_state):
         x = square_selected[0]
         y = square_selected[1]
         # If is white's turn to move focus on white pieces else on black
-        if game_state.board[x][y][0] == ('w' if game_state.whiteMove else 'b'):
-            # Create the instance that will highlight the squares
-            square_highlighted = pg.Surface((SQUARE_SIZE,SQUARE_SIZE))
-            square_highlighted.set_alpha(30)
-            square_highlighted.fill(pg.Color('green'))
-            display.blit(square_highlighted, (y*SQUARE_SIZE, x*SQUARE_SIZE))
-            square_highlighted.set_alpha(100)
-            square_highlighted.fill(pg.Color('yellow'))
-            for move in validMoves:
-                if (move.startRow == x and move.startCol == y):
-                    display.blit(square_highlighted, (move.endCol*SQUARE_SIZE, move.endRow*SQUARE_SIZE))
+        try:
+            if game_state.board[x][y][0] == ('w' if game_state.whiteMove else 'b'):
+                if(x==8):
+                    print(x)
+                    print(y)
+                    print(game_state.board[x][y][0])
+                # Create the instance that will highlight the squares
+                square_highlighted = pg.Surface((SQUARE_SIZE,SQUARE_SIZE))
+                square_highlighted.set_alpha(30)
+                square_highlighted.fill(pg.Color('green'))
+                display.blit(square_highlighted, (y*SQUARE_SIZE, x*SQUARE_SIZE))
+                square_highlighted.set_alpha(100)
+                square_highlighted.fill(pg.Color('yellow'))
+                for move in validMoves:
+                    if (move.startRow == x and move.startCol == y):
+                        display.blit(square_highlighted, (move.endCol*SQUARE_SIZE, move.endRow*SQUARE_SIZE))
+        
 
-
+        except:
+            print("INDEX ERROR")
+            print(square_selected)
 
 def main():
     playingMode = True
@@ -121,64 +130,96 @@ def main():
     checkmate = False #Track checkmate
     stalemate = False #Track stalemate
     winner = ""
+    isMachineWhite = False #False for blacks
+    highlight = True
     while playingMode:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                playingMode = False
-            elif event.type == pg.MOUSEBUTTONDOWN:
-                mouse_position = pg.mouse.get_pos()
-                mouse_x = mouse_position[0]//SQUARE_SIZE
-                mouse_y = mouse_position[1]//SQUARE_SIZE
-                # check if same square is selected twice
-                if (square == (mouse_y,mouse_x)):
-                    square = ()
-                    piecePositions =[]
-                else:
-                    square = (mouse_y,mouse_x)
-                    # If player has not yet chose piece on promotion do not continue the game
-                    if not promotion:
-                        piecePositions.append(square)
-                if len(piecePositions) == 2:
-                    move  = Actions.Move(piecePositions[0],piecePositions[1],game_state.board)
-                    for vm in validMoves:
-                        if (move.startRow == vm.startRow and move.startCol == vm.startCol
-                            and move.endRow == vm.endRow and move.endCol == vm.endCol):
-                                game_state.makeMove(move)
-                                if (game_state.blackPawnsPromo or game_state.whitePawnsPromo):
-                                    moved = False
-                                    promotion = True
-                                else: 
-                                    moved = True
-                                tmpMovedX = move.endRow
-                                tmpMovedY = move.endCol
-                
-                    square = ()
-                    piecePositions =[]
-                if (game_state.blackPawnsPromo and not moved):
-                    drawPromotionPieces(display,"b")
-                    moved =selectPiece(display,mouse_y,mouse_x,(tmpMovedX,tmpMovedY),"b",game_state.board)
-                    promotion = not moved
+        if game_state.whiteMove != isMachineWhite:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    playingMode = False
+                elif event.type == pg.MOUSEBUTTONDOWN:
+                    mouse_position = pg.mouse.get_pos()
+                    mouse_x = mouse_position[0]//SQUARE_SIZE
+                    mouse_y = mouse_position[1]//SQUARE_SIZE
+                    # check if same square is selected twice
+                    if (square == (mouse_y,mouse_x)):
+                        square = ()
+                        piecePositions =[]
+                    else:
+                        if not promotion and not mouse_y == 8 and not mouse_x == 8:
+                            square = (mouse_y,mouse_x)
+                            highlight = True
+                            piecePositions.append(square)
+                    if len(piecePositions) == 2:
+                        try:
+                            move  = Actions.Move(piecePositions[0],piecePositions[1],game_state.board)
+                        except:
+                            print("CLICKED OUT OF THE BOARD EXCEPTION")
+                        for vm in validMoves:
+                            if (move.startRow == vm.startRow and move.startCol == vm.startCol
+                                and move.endRow == vm.endRow and move.endCol == vm.endCol):
+                                    game_state.makeMove(move)
+                                    if (game_state.blackPawnsPromo or game_state.whitePawnsPromo):
+                                        moved = False
+                                        promotion = True
+                                    else: 
+                                        moved = True
+                                    tmpMovedX = move.endRow
+                                    tmpMovedY = move.endCol
+                    
+                        square = ()
+                        piecePositions =[]
 
-                elif (game_state.whitePawnsPromo and not moved):
-                    drawPromotionPieces(display,"w")
-                    moved = selectPiece(display,mouse_y,mouse_x, (tmpMovedX,tmpMovedY),"w",game_state.board)
-                    promotion = not moved
-            elif event.type == pg.KEYDOWN:
-                #When enter is pressed reset the game state
-                if event.key == pg.K_RETURN:
-                    del game_state
-                    display.fill(pg.Color("white"))
-                    game_state = ChessGame.GameState()
-                    square = () # tuple that stores the current selected square
-                    piecePositions = [] # starting position and destination
-                    validMoves = game_state.getValidMoves()
-                    moved = False
-                    promotion = False
-                    checkmate = False
-                    stalemate = False
-                    winner = ""
-                        
+                    if (game_state.whitePawnsPromo and not moved):
+                        drawPromotionPieces(display,"w")
+                        moved = selectPiece(display,mouse_y,mouse_x, (tmpMovedX,tmpMovedY),"w",game_state.board)
+                        promotion = not moved
+                        highlight = False
+                elif event.type == pg.KEYDOWN:
+                    #When enter is pressed reset the game state
+                    if event.key == pg.K_RETURN:
+                        del game_state
+                        display.fill(pg.Color("white"))
+                        game_state = ChessGame.GameState()
+                        square = () # tuple that stores the current selected square
+                        piecePositions = [] # starting position and destination
+                        validMoves = game_state.getValidMoves()
+                        moved = False
+                        promotion = False
+                        checkmate = False
+                        stalemate = False
+                        winner = ""
+        else: 
+            # If player has not yet chose piece on promotion do not continue the game
+            if not promotion:
+                    piecePositions.append(square)
+            if len(piecePositions) == 2:
+                move = minmax.getNextMove(game_state.board, isMachineWhite)
+                if (move != "NOT YET CALCULATED"):
+                    game_state.makeMove(move)
+                    if (game_state.blackPawnsPromo or game_state.whitePawnsPromo):
+                        moved = False
+                        promotion = True
+                    else: 
+                        moved = True
+                    tmpMovedX = move.endRow
+                    tmpMovedY = move.endCol
+                else: 
+                    game_state.whiteMove = not game_state.whiteMove
+            
+                square = ()
+                piecePositions =[]
+            if (game_state.blackPawnsPromo and not moved):
+                display.blit(IMAGES["bQ"],pg.Rect(move.endRow*SQUARE_SIZE,move.endCol*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
+                game_state.board[move.endRow][move.endCol] = "bQ"
+                moved = True
+                promotion = not moved
 
+            elif (game_state.whitePawnsPromo and not moved):
+                display.blit(IMAGES["wQ"],pg.Rect(move.endRow*SQUARE_SIZE,move.endCol*SQUARE_SIZE, SQUARE_SIZE,SQUARE_SIZE))
+                game_state.board[move.endRow][move.endCol] = "wQ"
+                moved = True
+                promotion = not moved                   
         
 
         if moved:
@@ -188,7 +229,7 @@ def main():
                 if (len(game_state.threats) == 0):
                     stalemate = True
                 else:
-                    if (game_state.whiteMove):
+                    if (not game_state.whiteMove):
                         winner = "White"
                     else:
                         winner = "Black"
@@ -196,7 +237,8 @@ def main():
             moved = False
 
         drawBoard(display)
-        highlightMoves(display,validMoves,square,game_state)
+        if (highlight):
+            highlightMoves(display,validMoves,square,game_state)
         drawPieces(display, game_state.board) # piece highlighting or move suggestions can be added later on here
         if checkmate: 
             display.fill(pg.Color("white"))
