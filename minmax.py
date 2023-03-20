@@ -114,7 +114,7 @@ def getNextMove(board, isWhite):
     pieces = 64
     for row in board:
         pieces = pieces - np.count_nonzero(row == "--")
-    MAX_DEPTH = 2 + int((32-pieces)/15)
+    MAX_DEPTH[0] = 2 + int((32-pieces)/15)
     numberBoard = BtG.convertToNumbers(board)
     next_move = "NOT YET CALCULATED"
     next_move = getNodeValue(numberBoard, isWhite, 0, next_move, -1000000, 1000000)[1]
