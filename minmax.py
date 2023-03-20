@@ -21,7 +21,7 @@ from evaluation_3 import evaluation_3
 
 
 MAX_DEPTH = [2]
-W1, W2, W3, W4 = 0.7, 0.05, 0.05, 0.2
+W1, W2, W3, W4 = 1, 0.7, 0.9, 1
 
 def getNodeValue(board, isWhite, depth, next_move, alpha, beta):
     str_board = BtG.convertToStrings(board) #convert board
@@ -37,7 +37,6 @@ def getNodeValue(board, isWhite, depth, next_move, alpha, beta):
     
     game_table = ChessGame.GameState()
     game_table.board = str_board
-    board = BtG.convertToNumbers(game_table.board)
     if (depth%2 == 0): #turno de max
         game_table.whiteMove = isWhite
     else:              #turno de min
@@ -115,7 +114,7 @@ def getNextMove(board, isWhite):
     pieces = 64
     for row in board:
         pieces = pieces - np.count_nonzero(row == "--")
-    MAX_DEPTH[0] = 2 + int((32-pieces)/15)
+    MAX_DEPTH = 2 + int((32-pieces)/15)
     numberBoard = BtG.convertToNumbers(board)
     next_move = "NOT YET CALCULATED"
     next_move = getNodeValue(numberBoard, isWhite, 0, next_move, -1000000, 1000000)[1]
