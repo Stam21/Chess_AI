@@ -16,7 +16,7 @@ class GameState():
             np.array(["--","--","--","--","--","--","--","--"]),
             np.array(["--","--","--","--","--","--","--","--"]),
             np.array(["wp","wp","wp","wp","wp","wp","wp","wp"]),
-            np.array(["wR","wN","wB","wQ","wK","wB","wN","bQ"])
+            np.array(["wR","wN","wB","wQ","wK","wB","wN","wR"])
         ]
         self.whiteMove = True
         # Initial position of kings.
