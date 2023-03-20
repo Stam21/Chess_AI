@@ -121,14 +121,14 @@ def evaluation_3(board, isWhite):
             if board[x][y] != 0: 
                 if (int((board[x][y]-1)/6) == 0):
                     if (board[x][y]%6 != 0):
-                        whites = whites + PIECE_BOARDS[board[x][y]%6][7-x][7-y]
+                        whites = whites + PIECE_BOARDS[board[x][y]%6][x][y]
                     else:
-                        whites = whites + PIECE_BOARDS[0][getGameStage(board,isWhite)][7-x][7-y]
+                        whites = whites + PIECE_BOARDS[0][getGameStage(board,isWhite)][x][y]
                 else:
                     if (board[x][y]%6 != 0):
-                        blacks = blacks + PIECE_BOARDS[board[x][y]%6][x][y]
+                        blacks = blacks + PIECE_BOARDS[board[x][y]%6][7-x][7-y]
                     else:
-                        blacks = blacks + PIECE_BOARDS[0][getGameStage(board,isWhite)][x][y]
+                        blacks = blacks + PIECE_BOARDS[0][getGameStage(board,isWhite)][7-x][7-y]
     if (isWhite):
         retval = whites - blacks
     else:
