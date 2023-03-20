@@ -20,8 +20,8 @@ class GameState():
         ]
         self.whiteMove = True
         # Initial position of kings.
-        self.whiteKing = (7,4)
-        self.blackKing = (0,4)
+        self.whiteKing = ()
+        self.blackKing = ()
         self.threats = []
         self.moves=[]
         self.pins=[]
@@ -145,7 +145,7 @@ class GameState():
             if ((self.board[x-1][y] == "--") and (self.calculateLine(x-1,y,threats,self.whiteKing) and (self.findPins(x,y,self.pins) or self.calculateLine(x-1,y,self.potentialThreats,self.whiteKing)))):
                 self.moves.append(Actions.Move((x,y),(x-1,y),self.board))
                 #move pawn 2 squares ahead
-                if ((x==6 and self.board[x-2][y] == "--") and (self.calculateLine(x-2,y,threats,self.whiteKing) and (self.findPins(x,y,self.pins) or self.calculateLine(x-2,y,self.potentialThreats,self.whiteKing)))):
+                if ((x==6 and self.board[x-2][y] == "--") and (self.calculateLine(x-2,y,threats,self.whiteKing) and (self.findPins(x,y,self.pins) or self.calculateLine(x-1,y,self.potentialThreats,self.whiteKing)))):
                     self.moves.append(Actions.Move((x,y),(x-2,y),self.board))
             #move pawn 1 square ahead and left or right if there is an enemy piece.
             if (y > 0):
@@ -169,7 +169,7 @@ class GameState():
             if ((self.board[x+1][y] == "--") and self.calculateLine(x+1,y,threats,self.blackKing) and (self.findPins(x,y,self.pins) or self.calculateLine(x-1,y,self.potentialThreats,self.blackKing) )):
                 self.moves.append(Actions.Move((x,y),(x+1,y),self.board))
                 #move pawn 2 squares ahead
-                if ((x==1 and self.board[x+2][y] == "--") and self.calculateLine(x+2,y,threats,self.blackKing) and (self.findPins(x,y,self.pins) or self.calculateLine(x-2,y,self.potentialThreats,self.blackKing))):
+                if ((x==1 and self.board[x+2][y] == "--") and self.calculateLine(x+2,y,threats,self.blackKing) and (self.findPins(x,y,self.pins) or self.calculateLine(x-1,y,self.potentialThreats,self.blackKing))):
                     self.moves.append(Actions.Move((x,y),(x+2,y),self.board))
             #move pawn 1 square ahead and left or right if there is an enemy piece.
             if (y > 1):    
@@ -415,7 +415,7 @@ class GameState():
                         if self.calculateLine(x+counter,y+counter,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                 self.moves.append(Actions.Move((x,y),(x+counter,y+counter),self.board))
                         if (self.board[x+counter][y+counter][0] == opponent):
-                            flagSE = True      
+                            flagSE = True
                     elif (self.board[x+counter][y+counter][0] == player):
                         flagSE = True
                 else:

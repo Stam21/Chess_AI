@@ -146,10 +146,9 @@ def main():
                         square = ()
                         piecePositions =[]
                     else:
-                        square = (mouse_y,mouse_x)
-                        highlight = True
-                        # If player has not yet chose piece on promotion do not continue the game
-                        if not promotion:
+                        if not promotion and not mouse_y == 8 and not mouse_x == 8:
+                            square = (mouse_y,mouse_x)
+                            highlight = True
                             piecePositions.append(square)
                     if len(piecePositions) == 2:
                         try:
