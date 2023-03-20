@@ -131,6 +131,7 @@ def main():
     stalemate = False #Track stalemate
     winner = ""
     isMachineWhite = False #False for blacks
+    highlight = True
     while playingMode:
         if game_state.whiteMove != isMachineWhite:
             for event in pg.event.get():
@@ -146,6 +147,7 @@ def main():
                         piecePositions =[]
                     else:
                         square = (mouse_y,mouse_x)
+                        highlight = True
                         # If player has not yet chose piece on promotion do not continue the game
                         if not promotion:
                             piecePositions.append(square)
@@ -168,15 +170,12 @@ def main():
                     
                         square = ()
                         piecePositions =[]
-                    if (game_state.blackPawnsPromo and not moved):
-                        drawPromotionPieces(display,"b")
-                        moved =selectPiece(display,mouse_y,mouse_x,(tmpMovedX,tmpMovedY),"b",game_state.board)
-                        promotion = not moved
-    
-                    elif (game_state.whitePawnsPromo and not moved):
+
+                    if (game_state.whitePawnsPromo and not moved):
                         drawPromotionPieces(display,"w")
                         moved = selectPiece(display,mouse_y,mouse_x, (tmpMovedX,tmpMovedY),"w",game_state.board)
                         promotion = not moved
+                        highlight = False
                 elif event.type == pg.KEYDOWN:
                     #When enter is pressed reset the game state
                     if event.key == pg.K_RETURN:
@@ -239,7 +238,8 @@ def main():
             moved = False
 
         drawBoard(display)
-        highlightMoves(display,validMoves,square,game_state)
+        if (highlight):
+            highlightMoves(display,validMoves,square,game_state)
         drawPieces(display, game_state.board) # piece highlighting or move suggestions can be added later on here
         if checkmate: 
             display.fill(pg.Color("white"))
