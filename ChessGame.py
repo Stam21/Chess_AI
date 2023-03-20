@@ -12,11 +12,11 @@ class GameState():
             np.array(["bR","bN","bB","bQ","bK","bB","bN","bR"]),
             np.array(["bp","bp","bp","bp","bp","bp","bp","bp"]),
             np.array(["--","--","--","--","--","--","--","--"]),
+            np.array(["--","--","--","--","bQ","--","--","--"]),
             np.array(["--","--","--","--","--","--","--","--"]),
-            np.array(["--","--","--","--","--","--","--","--"]),
-            np.array(["--","--","--","--","--","--","--","--"]),
-            np.array(["wp","wp","wp","wp","wp","wp","wp","wp"]),
-            np.array(["wR","wN","wB","wQ","wK","wB","wN","wR"])
+            np.array(["--","--","--","--","wQ","--","--","--"]),
+            np.array(["wp","wp","wp","wp","--","wp","wp","wp"]),
+            np.array(["wR","wN","wB","--","wK","wB","wN","wR"])
         ]
         self.whiteMove = True
         # Initial position of kings.
@@ -201,11 +201,34 @@ class GameState():
                             self.moves.append(Actions.Move((x,y),(x-counter,y),self.board))
                             if (self.board[x-counter][y][0] == opponent):
                                 flagW = True
-                    elif (self.board[x-counter][y] == "--" or self.board[x-counter][y][0] == opponent) and self.calculateLine(x-counter,y,threats,pos_King) and len(threats) != 0: 
+                    elif (self.board[x-counter][y] == "--" or self.board[x-counter][y][0] == opponent) and self.calculateLine(x-counter,y,threats,pos_King) and len(threats) != 0:
                             if (x-counter == threats[0][0] and y == threats[0][1]):
                                 self.moves.append(Actions.Move((x,y),(x-counter,y),self.board))
                             if (self.board[x-counter][y][0] == opponent):
                                 flagW = True
+                    
+                    elif ((self.board[x-counter][y] == "--" or self.board[x-counter][y][0] == opponent) and not self.findPins(x,y,self.pins) and len(threats) == 0):
+                         objective = self.board[x-counter][y]
+                         piece = self.board[x][y]
+                         prevMoves = self.moves
+                         prevPins = self.pins
+                         prevThreats = self.threats
+                         self.board[x-counter][y] = self.board[x][y]
+                         self.board[x][y] = "--"
+                         self.threats = self.getChecked()
+                         if (len(self.threats) == 0):
+                             
+                             prevMoves.append(Actions.Move((x,y),(x-counter,y),self.board))
+                             if (objective[0] == opponent):
+                                 flagW = True
+                         else:
+                             flagW = True
+                         self.board[x-counter][y] = objective
+                         self.board[x][y] = piece
+                         self.moves = prevMoves
+                         self.pins = prevPins
+                         self.threats = prevThreats
+                         
                     elif not (self.board[x-counter][y] == "--" or self.board[x-counter][y][0] == opponent):
                             flagW = True
                         
@@ -221,6 +244,29 @@ class GameState():
                                 self.moves.append(Actions.Move((x,y),(x,y-counter),self.board))
                             if (self.board[x][y-counter][0] == opponent):
                                 flagN = True
+                    
+                    elif ((self.board[x][y-counter] == "--" or self.board[x][y-counter][0] == opponent) and not self.findPins(x,y,self.pins) and len(threats) == 0):
+                         objective = self.board[x][y-counter]
+                         piece = self.board[x][y]
+                         prevMoves = self.moves
+                         prevPins = self.pins
+                         prevThreats = self.threats
+                         self.board[x][y-counter] = self.board[x][y]
+                         self.board[x][y] = "--"
+                         self.threats = self.getChecked()
+                         if (len(self.threats) == 0):
+                             
+                             prevMoves.append(Actions.Move((x,y),(x,y-counter),self.board))
+                             if (objective[0] == opponent):
+                                 flagN = True
+                         else:
+                             flagN = True
+                         self.board[x][y-counter] = objective
+                         self.board[x][y] = piece
+                         self.moves = prevMoves
+                         self.pins = prevPins
+                         self.threats = prevThreats
+                    
                     elif not (self.board[x][y-counter] == "--" or self.board[x][y-counter][0] == opponent):
                         flagN = True
                 else:
@@ -235,6 +281,29 @@ class GameState():
                                 self.moves.append(Actions.Move((x,y),(x,y+counter),self.board))
                             if (self.board[x][y+counter][0] == opponent):
                                 flagS = True
+                                
+                    elif ((self.board[x][y+counter] == "--" or self.board[x][y+counter][0] == opponent) and not self.findPins(x,y,self.pins) and len(threats) == 0):
+                         objective = self.board[x][y+counter]
+                         piece = self.board[x][y]
+                         prevMoves = self.moves
+                         prevPins = self.pins
+                         prevThreats = self.threats
+                         self.board[x][y+counter] = self.board[x][y]
+                         self.board[x][y] = "--"
+                         self.threats = self.getChecked()
+                         if (len(self.threats) == 0):
+                             
+                             prevMoves.append(Actions.Move((x,y),(x,y+counter),self.board))
+                             if (objective[0] == opponent):
+                                 flagS = True
+                         else:
+                             flagS = True
+                         self.board[x][y+counter] = objective
+                         self.board[x][y] = piece
+                         self.moves = prevMoves
+                         self.pins = prevPins
+                         self.threats = prevThreats
+                    
                     elif not (self.board[x][y+counter] == "--" or self.board[x][y+counter][0] == opponent):
                         flagS = True
                 else:
@@ -249,6 +318,29 @@ class GameState():
                                 self.moves.append(Actions.Move((x,y),(x+counter,y),self.board))
                             if (self.board[x+counter][y][0] == opponent):
                                 flagE = True
+                    
+                    elif ((self.board[x+counter][y] == "--" or self.board[x+counter][y][0] == opponent) and not self.findPins(x,y,self.pins) and len(threats) == 0):
+                         objective = self.board[x+counter][y]
+                         piece = self.board[x][y]
+                         prevMoves = self.moves
+                         prevPins = self.pins
+                         prevThreats = self.threats
+                         self.board[x+counter][y] = self.board[x][y]
+                         self.board[x][y] = "--"
+                         self.threats = self.getChecked()
+                         if (len(self.threats) == 0):
+                             
+                             prevMoves.append(Actions.Move((x,y),(x+counter,y),self.board))
+                             if (objective[0] == opponent):
+                                 flagE = True
+                         else:
+                             flagE = True
+                         self.board[x+counter][y] = objective
+                         self.board[x][y] = piece
+                         self.moves = prevMoves
+                         self.pins = prevPins
+                         self.threats = prevThreats
+                    
                     elif not (self.board[x+counter][y] == "--" or self.board[x+counter][y][0] == opponent):
                         flagE = True
                 else:
@@ -336,6 +428,34 @@ class GameState():
                                 self.moves.append(Actions.Move((x,y),(x-counter,y-counter),self.board))
                             if (self.board[x-counter][y-counter][0] == opponent):
                                     flagNW = True
+                    
+                    elif ((self.board[x-counter][y-counter] == "--" or self.board[x-counter][y-counter] == opponent) and not self.findPins(x,y,self.pins) and len(threats) == 0):
+                         objective = self.board[x-counter][y-counter]
+                         piece = self.board[x][y]
+                         prevMoves = self.moves
+                         prevPins = self.pins
+                         prevThreats = self.threats
+                         self.board[x-counter][y-counter] = self.board[x][y]
+                         self.board[x][y] = "--"
+                         self.threats = self.getChecked()
+                         if (x==6 and y==4 and x-counter == 5 and y-counter == 3):
+                             print("entra")
+                             print(self.board[x][y])
+                             print(self.board[x-counter][y-counter])
+                             print(self.threats)
+                         if (len(self.threats) == 0):
+                             
+                             prevMoves.append(Actions.Move((x,y),(x-counter,y-counter),self.board))
+                             if (objective[0] == opponent):
+                                 flagNW = True
+                         else:
+                             flagNW = True
+                         self.board[x-counter][y-counter] = objective
+                         self.board[x][y] = piece
+                         self.moves = prevMoves
+                         self.pins = prevPins
+                         self.threats = prevThreats
+                    
                     elif not(self.board[x-counter][y-counter] == "--" or self.board[x-counter][y-counter][0] == opponent):
                         flagNW = True
                 else:
@@ -350,6 +470,29 @@ class GameState():
                             self.moves.append(Actions.Move((x,y),(x-counter,y+counter),self.board))
                         if (self.board[x-counter][y+counter][0] == opponent):
                             flagSW = True
+                    
+                    elif ((self.board[x-counter][y+counter] == "--" or self.board[x-counter][y+counter] == opponent) and not self.findPins(x,y,self.pins) and len(threats) == 0):
+                         objective = self.board[x-counter][y+counter]
+                         piece = self.board[x][y]
+                         prevMoves = self.moves
+                         prevPins = self.pins
+                         prevThreats = self.threats
+                         self.board[x-counter][y+counter] = self.board[x][y]
+                         self.board[x][y] = "--"
+                         self.threats = self.getChecked()
+                         if (len(self.threats) == 0):
+                             
+                             prevMoves.append(Actions.Move((x,y),(x-counter,y+counter),self.board))
+                             if (objective[0] == opponent):
+                                 flagSW = True
+                         else:
+                             flagSW = True
+                         self.board[x-counter][y+counter] = objective
+                         self.board[x][y] = piece
+                         self.moves = prevMoves
+                         self.pins = prevPins
+                         self.threats = prevThreats
+                    
                     elif not(self.board[x-counter][y+counter] == "--" or self.board[x-counter][y+counter][0] == opponent):
                         flagSW = True
                 else:
@@ -364,6 +507,29 @@ class GameState():
                             self.moves.append(Actions.Move((x,y),(x+counter,y-counter),self.board))
                         if (self.board[x+counter][y-counter][0] == opponent):
                             flagNE = True
+                    
+                    elif ((self.board[x+counter][y-counter] == "--" or self.board[x+counter][y-counter] == opponent) and not self.findPins(x,y,self.pins) and len(threats) == 0):
+                         objective = self.board[x+counter][y-counter]
+                         piece = self.board[x][y]
+                         prevMoves = self.moves
+                         prevPins = self.pins
+                         prevThreats = self.threats
+                         self.board[x+counter][y-counter] = self.board[x][y]
+                         self.board[x][y] = "--"
+                         self.threats = self.getChecked()
+                         if (len(self.threats) == 0):
+                             
+                             prevMoves.append(Actions.Move((x,y),(x+counter,y-counter),self.board))
+                             if (objective[0] == opponent):
+                                 flagNE = True
+                         else:
+                             flagNE = True
+                         self.board[x+counter][y-counter] = objective
+                         self.board[x][y] = piece
+                         self.moves = prevMoves
+                         self.pins = prevPins
+                         self.threats = prevThreats
+                    
                     elif not(self.board[x+counter][y-counter] == "--" or self.board[x+counter][y-counter][0] == opponent):
                         flagNE = True
                 else:
@@ -378,6 +544,29 @@ class GameState():
                             self.moves.append(Actions.Move((x,y),(x+counter,y+counter),self.board))
                         if (self.board[x+counter][y+counter][0] == opponent):
                             flagSE = True
+                    
+                    elif ((self.board[x+counter][y+counter] == "--" or self.board[x+counter][y+counter] == opponent) and not self.findPins(x,y,self.pins) and len(threats) == 0):
+                         objective = self.board[x+counter][y+counter]
+                         piece = self.board[x][y]
+                         prevMoves = self.moves
+                         prevPins = self.pins
+                         prevThreats = self.threats
+                         self.board[x+counter][y+counter] = self.board[x][y]
+                         self.board[x][y] = "--"
+                         self.threats = self.getChecked()
+                         if (len(self.threats) == 0):
+                             
+                             prevMoves.append(Actions.Move((x,y),(x+counter,y+counter),self.board))
+                             if (objective[0] == opponent):
+                                 flagSE = True
+                         else:
+                             flagSE = True
+                         self.board[x+counter][y+counter] = objective
+                         self.board[x][y] = piece
+                         self.moves = prevMoves
+                         self.pins = prevPins
+                         self.threats = prevThreats
+                    
                     elif not(self.board[x+counter][y+counter] == "--" or self.board[x+counter][y+counter][0] == opponent):
                         flagSE = True
                 else:
@@ -547,13 +736,13 @@ class GameState():
             validity = True
         else:
             for threat in threats:
-
+                imposibleValue = 10000000000 #when both slopes are divided by zero slope1 == slope2 but slope1 != 0 or any other posible value 
                 if (threat[1]-king[1] == 0 ):
-                    slope1 = 0
+                    slope1 = imposibleValue
                 else:
                     slope1 = (threat[0] - king[0]) / (threat[1] - king[1])
                 if (y-king[1]== 0):
-                    slope2 = 0
+                    slope2 = imposibleValue
                 else:
                     slope2 = (x - king[0]) / (y - king[1])
 
@@ -592,3 +781,4 @@ class GameState():
 
         return castling
 
+print(GameState().calculateLine(4, 3, [(4,3)], (4,7)))
