@@ -20,7 +20,7 @@ from evaluation_2 import evaluation_2_attacking, evaluation_2_protecting
 from evaluation_3 import evaluation_3
 
 
-MAX_DEPTH = [3]
+MAX_DEPTH = [2]
 W1, W2, W3, W4 = 0.4, 0.2, 0.2, 0.2
 
 def getNodeValue(board, isWhite, depth, next_move, alpha, beta):
