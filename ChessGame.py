@@ -213,7 +213,7 @@ class GameState():
                                 flagW = True
                     elif (self.board[x-counter][y] == "--" or self.board[x-counter][y][0] == opponent) and self.calculateLine(x-counter,y,threats,pos_King): 
                             for threat in threats:    
-                                if (x-counter == threat[0] and y == threat[1]) or self.calculateLine(x,y,threat,pos_King):
+                                if (x-counter == threat[0] and y == threat[1]) or self.calculateLine(x,y,[threat],pos_King):
                                     self.moves.append(Actions.Move((x,y),(x-counter,y),self.board))
                             if self.calculateLine(x-counter,y,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                     self.moves.append(Actions.Move((x,y),(x-counter,y),self.board))
@@ -231,7 +231,7 @@ class GameState():
                                 flagN = True
                     elif (self.board[x][y-counter] == "--" or self.board[x][y-counter][0] == opponent) and self.calculateLine(x,y-counter,threats,pos_King):
                             for threat in threats:    
-                                if (x == threat[0] and y-counter == threat[1]) or self.calculateLine(x,y,threat,pos_King):
+                                if (x == threat[0] and y-counter == threat[1]) or self.calculateLine(x,y,[threat],pos_King):
                                     self.moves.append(Actions.Move((x,y),(x,y-counter),self.board))
                             if self.calculateLine(x,y-counter,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                 self.moves.append(Actions.Move((x,y),(x,y-counter),self.board))
@@ -249,7 +249,7 @@ class GameState():
                                 flagS = True
                     elif (self.board[x][y+counter] == "--" or self.board[x][y+counter][0] == opponent) and self.calculateLine(x,y+counter,threats,pos_King): 
                             for threat in threats:
-                                if  (x == threat[0] and y+counter == threat[1]) or self.calculateLine(x,y,threat,pos_King):
+                                if  (x == threat[0] and y+counter == threat[1]) or self.calculateLine(x,y,[threat],pos_King):
                                     self.moves.append(Actions.Move((x,y),(x,y+counter),self.board))
                             if self.calculateLine(x,y+counter,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                 self.moves.append(Actions.Move((x,y),(x,y+counter),self.board))
@@ -266,7 +266,7 @@ class GameState():
                                 flagE = True
                     elif (self.board[x+counter][y] == "--" or self.board[x+counter][y][0] == opponent) and self.calculateLine(x+counter,y,threats,pos_King): 
                             for threat in threats:
-                                if (x+counter == threat[0] and y == threat[1]) or self.calculateLine(x,y,threat,pos_King):
+                                if (x+counter == threat[0] and y == threat[1]) or self.calculateLine(x,y,[threat],pos_King):
                                     self.moves.append(Actions.Move((x,y),(x+counter,y),self.board))
                             if self.calculateLine(x+counter,y,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                 self.moves.append(Actions.Move((x,y),(x+counter,y),self.board))
@@ -358,7 +358,7 @@ class GameState():
                                 flagNW = True
                     elif (self.board[x-counter][y-counter] == "--" or self.board[x-counter][y-counter][0] == opponent) and self.calculateLine(x-counter,y-counter,threats,pos_King):
                             for threat in threats:
-                                if (x-counter == threat[0] and y-counter == threat[1]) or self.calculateLine(x,y,threat,pos_King):
+                                if (x-counter == threat[0] and y-counter == threat[1]) or self.calculateLine(x,y,[threat],pos_King):
                                     self.moves.append(Actions.Move((x,y),(x-counter,y-counter),self.board))
                             if self.calculateLine(x-counter,y-counter,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                 self.moves.append(Actions.Move((x,y),(x-counter,y-counter),self.board))
@@ -375,7 +375,7 @@ class GameState():
                                 flagSW = True
                     elif (self.board[x-counter][y+counter] == "--" or self.board[x-counter][y+counter][0] == opponent) and self.calculateLine(x-counter,y+counter,threats,pos_King):
                         for threat in threats:
-                            if (x-counter == threat[0] and y+counter == threat[1]) or self.calculateLine(x,y,threat,pos_King):    
+                            if (x-counter == threat[0] and y+counter == threat[1]) or self.calculateLine(x,y,[threat],pos_King):    
                                 self.moves.append(Actions.Move((x,y),(x-counter,y+counter),self.board))
                         if self.calculateLine(x-counter,y+counter,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                 self.moves.append(Actions.Move((x,y),(x-counter,y+counter),self.board))
@@ -392,7 +392,7 @@ class GameState():
                                 flagNE = True
                     elif (self.board[x+counter][y-counter] == "--" or self.board[x+counter][y-counter][0] == opponent) and self.calculateLine(x+counter,y-counter,threats,pos_King):
                         for threat in threats:    
-                            if (x+counter == threat[0] and y-counter == threat[1]) or self.calculateLine(x,y,threat,pos_King):
+                            if (x+counter == threat[0] and y-counter == threat[1]) or self.calculateLine(x,y,[threat],pos_King):
                                 self.moves.append(Actions.Move((x,y),(x+counter,y-counter),self.board))
                         if self.calculateLine(x+counter,y-counter,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                 self.moves.append(Actions.Move((x,y),(x+counter,y-counter),self.board))
@@ -409,7 +409,7 @@ class GameState():
                                 flagSE = True
                     elif (self.board[x+counter][y+counter] == "--" or self.board[x+counter][y+counter][0] == opponent) and self.calculateLine(x+counter,y+counter,threats,pos_King):
                         for threat in threats:
-                            if (x+counter == threat[0] and y+counter == threat[1]) or self.calculateLine(x,y,threat,pos_King):
+                            if (x+counter == threat[0] and y+counter == threat[1]) or self.calculateLine(x,y,[threat],pos_King):
                                 self.moves.append(Actions.Move((x,y),(x+counter,y+counter),self.board))
                         if self.calculateLine(x+counter,y+counter,self.potentialThreats,pos_King) and not self.findPins(x,y,self.pins):
                                 self.moves.append(Actions.Move((x,y),(x+counter,y+counter),self.board))
