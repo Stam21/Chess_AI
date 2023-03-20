@@ -291,7 +291,6 @@ class GameState():
             opponent = 'w'
             pos_King = self.blackKing
 
-        
         if (x - 2 >= 0):
             if (y-1 >=0):
                 if (self.board[x-2][y-1] == "--" or self.board[x-2][y-1][0] == opponent) and self.calculateLine(x-2,y-1,threats,pos_King) and (self.findPins(x,y,self.pins)):
@@ -482,9 +481,9 @@ class GameState():
                                 if(self.board[move.endRow][move.endCol][1] == 'K'):
                                     threatstmp.append((move.endRow,move.endCol)) 
 
-                        if (len(threatstmp) + len(threats)) == 0 or (not recursion and self.board[x+square_x][y+square_y][0] == opponent and \
+                        if (len(threatstmp) + len(threats)) == 0 or (self.board[x+square_x][y+square_y][0] == opponent and \
                             (self.calculateLine(x+square_x,y+square_y,threatstmp,(x,y)))) or \
-                            (not recursion and not self.calculateLine(x+square_x,y+square_y,threats,(x,y)) and (self.calculateLine(x+square_x,y+square_y,threatstmp,(x,y)))):
+                            (not self.calculateLine(x+square_x,y+square_y,threats,(x,y)) and (self.calculateLine(x+square_x,y+square_y,threatstmp,(x,y)))):
                             moves.append(Actions.Move((x,y),(x+square_x,y+square_y),self.board))
 
         
